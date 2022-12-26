@@ -30,6 +30,8 @@ public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
             while (DonneesGroupes.next()){
                 Groupes.add(DonneesGroupes.getString("groupe_id"));
             }
+            DonneesGroupes.close();
+            cnx.close();
             return Groupes;
         }
         catch (SQLException SQLE){
