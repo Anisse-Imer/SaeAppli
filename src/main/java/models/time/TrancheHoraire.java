@@ -5,6 +5,7 @@ import dao.TrancheHoraireDaoImpl;
 import java.security.InvalidParameterException;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.List;
 
 public class TrancheHoraire {
     int id;
@@ -98,23 +99,23 @@ public class TrancheHoraire {
 
         System.out.println(t2.toString());
         TrancheHoraireDaoImpl thDAO = new TrancheHoraireDaoImpl();
-        System.out.println(thDAO.GetDateByTrancheHoraire(t2));
+        System.out.println(thDAO.getDateByTrancheHoraire(t2));
 
-        System.out.println(thDAO.LastSemaine());
+        System.out.println(thDAO.lastSemaine());
 
-        Date d1 = thDAO.LastDateSemaines();
-        Date d2 = thDAO.DateInterval(d1, 7);
+        Date d1 = thDAO.lastDateSemaines();
+        Date d2 = thDAO.dateInterval(d1, 7);
         System.out.println(d1.toString());
         System.out.println(d2.toString());
 
-        thDAO.AddSemaine(4);
+        thDAO.addSemaine(4);
 
         TrancheHoraire t3 = new TrancheHoraire(0, 6, 3 ,
                 new Time(0,0,0),
                 new Time(5,30,0));
 
         System.out.println(t3.toString());
-        t3 = thDAO.GetTrancheHoraireExist(t3);
+        t3 = thDAO.getTrancheHoraireExist(t3);
         System.out.println(t3.toString());
     }
 }

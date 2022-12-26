@@ -1,6 +1,5 @@
-package models.users;
+package models.usersFactory;
 
-import java.security.InvalidParameterException;
 import java.util.List;
 
 public class UtilisateurEleve extends Utilisateur{

@@ -1,12 +1,12 @@
 package TEST;
-import dao.UtilisateurEleveDaoImpl;
-import models.users.UtilisateurEleve;
+import dao.UtilisateurDaoImpl;
+import models.usersFactory.UtilisateurEleve;
 
 import java.util.List;
 
 public class test {
     public static void main(String[] args) {
-        UtilisateurEleveDaoImpl UE = new UtilisateurEleveDaoImpl();
+        UtilisateurDaoImpl UE = new UtilisateurDaoImpl();
         List<UtilisateurEleve> ListeBUT = UE.getElevesByGroup("BUT");
         for (UtilisateurEleve u:
              ListeBUT) {

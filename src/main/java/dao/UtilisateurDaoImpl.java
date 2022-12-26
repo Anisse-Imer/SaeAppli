@@ -1,8 +1,9 @@
 package dao;
 
-import models.users.Utilisateur;
-import models.users.UtilisateurEleve;
+import models.usersFactory.Utilisateur;
+import models.usersFactory.UtilisateurEleve;
 import ConnectionJDBC.ConnectionJDBC;
+import models.usersFactory.UtilisateurProfesseur;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,8 +12,8 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
-    public UtilisateurEleveDaoImpl(){}
+public class UtilisateurDaoImpl implements UtilisateurDao {
+    public UtilisateurDaoImpl(){}
 
     public List<String> getGroupesbyEleve(String idEleve){
         try{
@@ -82,9 +83,16 @@ public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
                                                 , "ELV"
                                                 , getGroupesbyEleve(DonneesEleves.getString("utilisateur_id")));
                 }
-                //Renvoie une reference Utilisateur si c'est un simple utilisateur.
-                return new Utilisateur(DonneesEleves.getString("utilisateur_id"),
-                                        DonneesEleves.getString("fonction_id"));
+                else if(DonneesEleves.getString("fonction_id").equals("ENS")) {
+                    return new UtilisateurProfesseur(DonneesEleves.getString("utilisateur_id")
+                                                    , "ENS"
+                                                    , new TrancheHoraireDaoImpl().getIndisponibiliteEnseignant(
+                                                            DonneesEleves.getString("utilisateur_id")));
+                }
+                else if(DonneesEleves.getString("fonction_id").equals("ADMIN")){
+                    return new Utilisateur(DonneesEleves.getString("utilisateur_id"),
+                            DonneesEleves.getString("fonction_id"));
+                }
             }
             DonneesEleves.close();
         }

@@ -1,4 +1,4 @@
-package models.users;
+package models.usersFactory;
 
 import java.security.InvalidParameterException;
 

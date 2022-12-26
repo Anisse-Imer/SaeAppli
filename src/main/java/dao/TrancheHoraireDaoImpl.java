@@ -2,10 +2,10 @@ package dao;
 
 import ConnectionJDBC.ConnectionJDBC;
 import models.time.TrancheHoraire;
-import models.users.Utilisateur;
-import models.users.UtilisateurEleve;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
 
@@ -14,13 +14,13 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
     }
 
     @Override
-    public TrancheHoraire GetTrancheHoraireById(int id) {
+    public TrancheHoraire getTrancheHoraireById(int id) {
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
                     ("select *" +
-                            "from tranches_horaires" +
-                            "where tranche_horaire = ?");
+                            " from tranches_horaires" +
+                            " where tranche_horaire = ?");
             statement.setInt(1, id);
             ResultSet Tranche = statement.executeQuery();
             if(Tranche.next()) {
@@ -39,7 +39,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         return null;
     }
 
-    public int LastSemaine(){
+    public int lastSemaine(){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
@@ -59,7 +59,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         return -1;
     }
 
-    public Date LastDateSemaines(){
+    public Date lastDateSemaines(){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
@@ -79,7 +79,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         return null;
     }
 
-    public Date DateInterval(Date D1, int interval){
+    public Date dateInterval(Date D1, int interval){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
@@ -100,11 +100,11 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         }
         return null;
     }
-    public void AddSemaine(int SemaineId){
+    public void addSemaine(int SemaineId){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
-            int LastSemaine = LastSemaine();
-            Date LastDate = LastDateSemaines();
+            int LastSemaine = lastSemaine();
+            Date LastDate = lastDateSemaines();
             if(LastSemaine != -1 && SemaineId > LastSemaine){
                 PreparedStatement statement = cnx.prepareStatement
                         ("INSERT INTO semaines" +
@@ -112,9 +112,9 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
                                 " VALUES (?, ?)");
                 for(int i = LastSemaine ; i < SemaineId + 1 ; i++) {
                     statement.setString(1,
-                            DateInterval(LastDate, 1 + (i - LastSemaine) * 7 ).toString());
+                            dateInterval(LastDate, 1 + (i - LastSemaine) * 7 ).toString());
                     statement.setString(2,
-                            DateInterval(LastDate, 7 + (i - LastSemaine) * 7 ).toString());
+                            dateInterval(LastDate, 7 + (i - LastSemaine) * 7 ).toString());
                     statement.execute();
                     PreparedStatement StatementJour = cnx.prepareStatement
                             ("CALL creer_jours_semaine(?)");
@@ -127,7 +127,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
             SQLE.printStackTrace();
         }
     }
-    public String GetDateByTrancheHoraire(TrancheHoraire T1){
+    public String getDateByTrancheHoraire(TrancheHoraire T1){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
@@ -205,14 +205,40 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         return 0;
     }
 
-    public TrancheHoraire GetTrancheHoraireExist(TrancheHoraire T1){
+    public TrancheHoraire getTrancheHoraireExist(TrancheHoraire T1){
         if(getIdTrancheHoraire(T1) == 0){
-                AddSemaine(T1.getIdSemaine());
+                addSemaine(T1.getIdSemaine());
                 saveTrancheHoraire(T1);
                 T1.setId(getIdTrancheHoraire(T1));
                 return T1;
         }
         T1.setId(getIdTrancheHoraire(T1));
         return T1;
+    }
+
+    public List<TrancheHoraire> getIndisponibiliteEnseignant(String IdEnseignant){
+        try{
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
+            PreparedStatement statement = cnx.prepareStatement
+                    ("select tranche_horaire" +
+                            " from indisponibilites_tuteurs" +
+                            " where utilisateur_id = ?");
+            statement.setString(1, IdEnseignant);
+            ResultSet IdTranchesHoraires = statement.executeQuery();
+            List<TrancheHoraire> Tranches = new ArrayList<TrancheHoraire>();
+            while (IdTranchesHoraires.next()){
+                TrancheHoraire TrancheSelonId = getTrancheHoraireById(
+                                                IdTranchesHoraires.getInt("tranche_horaire"));
+                if(TrancheSelonId != null){
+                    Tranches.add(TrancheSelonId);
+                }
+            }
+            IdTranchesHoraires.close();
+            return Tranches;
+        }
+        catch (SQLException SQLE){
+            SQLE.printStackTrace();
+        }
+        return null;
     }
 }

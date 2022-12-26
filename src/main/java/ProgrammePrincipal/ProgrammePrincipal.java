@@ -1,8 +1,7 @@
 package ProgrammePrincipal;
 
-import dao.UtilisateurEleveDaoImpl;
-import models.users.Utilisateur;
-import models.users.UtilisateurEleve;
+import dao.UtilisateurDaoImpl;
+import models.usersFactory.Utilisateur;
 
 import java.util.*;
 
@@ -29,7 +28,7 @@ public class ProgrammePrincipal {
             login = console.next();
             System.out.println("Entrez votre mot de passse :");
             mdp = console.next();
-            user = new UtilisateurEleveDaoImpl().getUtilisateurConnection(login, mdp);
+            user = new UtilisateurDaoImpl().getUtilisateurConnection(login, mdp);
         }while(!(user != null || mdp.equals("exit") || login.equals("exit")));
         return user;
     }
@@ -37,6 +36,6 @@ public class ProgrammePrincipal {
 
     public static void main(String[] args) {
         Utilisateur user = Authentification();
-        System.out.println(user.toString());
+
     }
 }
