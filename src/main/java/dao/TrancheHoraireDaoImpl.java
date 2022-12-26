@@ -32,7 +32,6 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
                 return TID;
             }
             Tranche.close();
-            cnx.close();
         }
         catch (SQLException SQLE){
             SQLE.printStackTrace();
@@ -50,11 +49,9 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
             if(Semaine.next()){
                 int LastId = Semaine.getInt("MAX(semaine_id)");
                 Semaine.close();
-                cnx.close();
                 return LastId;
             }
             Semaine.close();
-            cnx.close();
         }
         catch (SQLException SQLE){
             SQLE.printStackTrace();
@@ -72,11 +69,9 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
             if(Semaine.next()){
                 Date LastDate = Semaine.getDate("MAX(semaine_fin)");
                 Semaine.close();
-                cnx.close();
                 return LastDate;
             }
             Semaine.close();
-            cnx.close();
         }
         catch (SQLException SQLE){
             SQLE.printStackTrace();
@@ -96,11 +91,9 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
             if(DateInterval.next()){
                 Date DInterval = DateInterval.getDate("DINTERVAL");
                 DateInterval.close();
-                cnx.close();
                 return DInterval;
             }
             DateInterval.close();
-            cnx.close();
         }
         catch (SQLException SQLE){
             SQLE.printStackTrace();
@@ -129,7 +122,6 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
                     StatementJour.execute();
                 }
             }
-            cnx.close();
         }
         catch (SQLException SQLE){
             SQLE.printStackTrace();
@@ -152,7 +144,6 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
                 return Tranche.getDate("StringDate").toString();
             }
             Tranche.close();
-            cnx.close();
         }
         catch (SQLException SQLE){
             SQLE.printStackTrace();
@@ -181,7 +172,6 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
             statement.setInt(3, T1.getIdJour());
             statement.setInt(4, T1.getIdSemaine());
             statement.execute();
-            cnx.close();
         }
         catch (SQLException SQLE){
             SQLE.printStackTrace();
@@ -206,7 +196,6 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
             if(Tranche.next()){
                 int IdCherche = Tranche.getInt("tranche_horaire");
                 Tranche.close();
-                cnx.close();
                 return IdCherche;
             }
         }

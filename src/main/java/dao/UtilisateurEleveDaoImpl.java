@@ -26,7 +26,6 @@ public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
                 Groupes.add(DonneesGroupes.getString("groupe_id"));
             }
             DonneesGroupes.close();
-            cnx.close();
             return Groupes;
         }
         catch (SQLException SQLE){
@@ -47,8 +46,7 @@ public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
                                 + " and e.utilisateur_id = u.utilisateur_id");
             statement.setString(1,groupe);
             ResultSet DonneesEleves = statement.executeQuery();
-
-            List<UtilisateurEleve> ListeElevesGroupe = new LinkedList<>();
+            List<UtilisateurEleve> ListeElevesGroupe = new LinkedList<UtilisateurEleve>();
             while(DonneesEleves.next()){
                 List<String> Groupes = getGroupesbyEleve(DonneesEleves.getString("utilisateur_id"));
                 ListeElevesGroupe.add(new UtilisateurEleve(DonneesEleves.getString("utilisateur_id")
@@ -56,7 +54,6 @@ public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
                                                         , Groupes));
             }
             DonneesEleves.close();
-            cnx.close();
             return ListeElevesGroupe;
         }
         catch (SQLException SQLE){
@@ -90,7 +87,6 @@ public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
                                         DonneesEleves.getString("fonction_id"));
             }
             DonneesEleves.close();
-            cnx.close();
         }
         catch (SQLException SQLE){
             SQLE.printStackTrace();

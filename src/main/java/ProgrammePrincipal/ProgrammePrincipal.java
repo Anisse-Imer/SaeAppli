@@ -37,5 +37,6 @@ public class ProgrammePrincipal {
 
     public static void main(String[] args) {
         Utilisateur user = Authentification();
+        System.out.println(user.toString());
     }
 }
