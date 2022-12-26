@@ -1,7 +1,7 @@
 package ProgrammePrincipal;
 
 import dao.UtilisateurDaoImpl;
-import models.usersFactory.Utilisateur;
+import models.usersFactory.User;
 
 import java.util.*;
 
@@ -18,11 +18,11 @@ public class ProgrammePrincipal {
         return scan;
     }
 
-    public static Utilisateur Authentification(){
+    public static User authentification(){
         Scanner console = new Scanner(System.in);
         String login;
         String mdp;
-        Utilisateur user;
+        User user;
         do{
             System.out.println("Entrez votre login :");
             login = console.next();
@@ -33,9 +33,36 @@ public class ProgrammePrincipal {
         return user;
     }
 
+    public static void eleveMain(User user){
+        System.out.println("eleveMain" + user.toString());
+    }
+
+    public static void enseignantMain(User user){
+        System.out.println("enseignantMain" + user.toString());
+    }
+
+    public static void adminMain(User user){
+        System.out.println("adminMain" + user.toString());
+    }
+
+    public static void application(User user){
+        if(user != null) {
+            switch (user.getFonction()) {
+                case "ELV": {
+                    eleveMain(user);
+                };break;
+                case "ENS": {
+                    enseignantMain(user);
+                };break;
+                case "ADMIN": {
+                    adminMain(user);
+                };break;
+            }
+        }
+    }
 
     public static void main(String[] args) {
-        Utilisateur user = Authentification();
-
+        User user = authentification();
+        application(user);
     }
 }

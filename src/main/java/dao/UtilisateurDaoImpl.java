@@ -1,9 +1,7 @@
 package dao;
 
-import models.usersFactory.Utilisateur;
-import models.usersFactory.UtilisateurEleve;
+import models.usersFactory.*;
 import ConnectionJDBC.ConnectionJDBC;
-import models.usersFactory.UtilisateurProfesseur;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -63,9 +61,9 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         return null;
     }
 
-    //Fonction permettant de créer un utilisateur à partir d'un login et un mot de passe.
-    //Renvoie null si aucun compte ne correspond.
-    public Utilisateur getUtilisateurConnection(String login, String mdp) {
+    //Fonction renvoyant un User (Elève, enseignant, admin) selon les logins.
+    //Renvoie null si la fonction n'est pas "ENS", "ELV", "ADMIN" ou si le compte n'existe pas dans la base.
+    public User getUtilisateurConnection(String login, String mdp) {
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
@@ -79,19 +77,19 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
             while (DonneesEleves.next()){
                 //Renvoie une reference UtilisateurEleve si c'est un élève.
                 if(DonneesEleves.getString("fonction_id").equals("ELV")){
-                    return new UtilisateurEleve(DonneesEleves.getString("utilisateur_id")
-                                                , "ELV"
-                                                , getGroupesbyEleve(DonneesEleves.getString("utilisateur_id")));
+                    return new UserFactory().create(DonneesEleves.getString("utilisateur_id")
+                                                    , "ELV"
+                                                    , getGroupesbyEleve(DonneesEleves.getString("utilisateur_id")));
                 }
                 else if(DonneesEleves.getString("fonction_id").equals("ENS")) {
-                    return new UtilisateurProfesseur(DonneesEleves.getString("utilisateur_id")
+                    return new UserFactory().create(DonneesEleves.getString("utilisateur_id")
                                                     , "ENS"
                                                     , new TrancheHoraireDaoImpl().getIndisponibiliteEnseignant(
-                                                            DonneesEleves.getString("utilisateur_id")));
+                                                        DonneesEleves.getString("utilisateur_id")));
                 }
                 else if(DonneesEleves.getString("fonction_id").equals("ADMIN")){
-                    return new Utilisateur(DonneesEleves.getString("utilisateur_id"),
-                            DonneesEleves.getString("fonction_id"));
+                    return new UserFactory().create(DonneesEleves.getString("utilisateur_id")
+                                                    , DonneesEleves.getString("fonction_id"));
                 }
             }
             DonneesEleves.close();

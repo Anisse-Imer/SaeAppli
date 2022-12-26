@@ -1,17 +1,19 @@
 package models.usersFactory;
 
+import models.time.TrancheHoraire;
+
 import java.util.List;
 
-public class UtilisateurEleve implements User{
+public class UtilisateurEnseignant implements User{
 
     public String id;
     public String fonction;
-    public List<String> groupes;
+    public List<TrancheHoraire> Indisponibilites;
 
-    public UtilisateurEleve(String id, String fonction, List<String> groupes) {
+    public UtilisateurEnseignant(String id, String fonction, List<TrancheHoraire> indisponibilites) {
         this.id = id;
         this.fonction = fonction;
-        this.groupes = groupes;
+        Indisponibilites = indisponibilites;
     }
 
     public String getFonction() {
@@ -20,10 +22,10 @@ public class UtilisateurEleve implements User{
 
     @Override
     public String toString() {
-        return "UtilisateurEleve{" +
+        return "UtilisateurEnseignant{" +
                 "id='" + id + '\'' +
                 ", fonction='" + fonction + '\'' +
-                ", groupes=" + groupes +
+                ", Indisponibilites=" + Indisponibilites +
                 '}';
     }
 }
