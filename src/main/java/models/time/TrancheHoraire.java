@@ -109,8 +109,12 @@ public class TrancheHoraire {
 
         thDAO.AddSemaine(4);
 
-        System.out.println(t1.toString());
-        t1 = thDAO.GetTrancheHoraireExist(t1);
-        System.out.println(t1.toString());
+        TrancheHoraire t3 = new TrancheHoraire(0, 6, 3 ,
+                new Time(0,0,0),
+                new Time(5,30,0));
+
+        System.out.println(t3.toString());
+        t3 = thDAO.GetTrancheHoraireExist(t3);
+        System.out.println(t3.toString());
     }
 }

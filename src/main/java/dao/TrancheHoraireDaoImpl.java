@@ -244,7 +244,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
                             " and heure_debut = ?" +
                             " and heure_fin = ?");
             statement.setInt(1, T1.getIdJour());
-            statement.setInt(2,T1.getIdJour());
+            statement.setInt(2,T1.getIdSemaine());
             statement.setTime(3,T1.getDebut());
             statement.setTime(4,T1.getFin());
             ResultSet Tranche = statement.executeQuery();
