@@ -1,6 +1,5 @@
 package dao;
 
-import dao.UtilisateurEleveDao;
 import models.users.Utilisateur;
 import models.users.UtilisateurEleve;
 import ConnectionJDBC.ConnectionJDBC;
@@ -15,13 +14,9 @@ import java.util.List;
 public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
     public UtilisateurEleveDaoImpl(){}
 
-    public List<String> GetGroupesbyEleve(String idEleve){
+    public List<String> getGroupesbyEleve(String idEleve){
         try{
-            Connection cnx = new ConnectionJDBC("com.mysql.cj.jdbc.Driver"
-                    , "jdbc:mysql://127.0.0.1:3306/IUT"
-                    , "root"
-                    , "an56im18").connection;
-
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement StatementGroupes = cnx.prepareStatement
                     ("select groupe_id from eleves where utilisateur_id like ?");
             StatementGroupes.setString(1, "%" + idEleve + "%");
@@ -37,19 +32,13 @@ public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
         catch (SQLException SQLE){
             SQLE.printStackTrace();
         }
-        catch (ClassNotFoundException CNFE){
-            CNFE.printStackTrace();
-        }
         return null;
     }
 
     //Fonction retournant la liste des élèves d'un groupe.
-    public List<UtilisateurEleve> GetElevesByGroup(String groupe){
+    public List<UtilisateurEleve> getElevesByGroup(String groupe){
         try{
-            Connection cnx = new ConnectionJDBC("com.mysql.cj.jdbc.Driver"
-                    , "jdbc:mysql://127.0.0.1:3306/IUT"
-                    , "root"
-                    , "an56im18").connection;
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
                         ("select e.utilisateur_id, u.fonction_id "
                                 + "from eleves e" +
@@ -61,7 +50,7 @@ public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
 
             List<UtilisateurEleve> ListeElevesGroupe = new LinkedList<>();
             while(DonneesEleves.next()){
-                List<String> Groupes = GetGroupesbyEleve(DonneesEleves.getString("utilisateur_id"));
+                List<String> Groupes = getGroupesbyEleve(DonneesEleves.getString("utilisateur_id"));
                 ListeElevesGroupe.add(new UtilisateurEleve(DonneesEleves.getString("utilisateur_id")
                                                         , DonneesEleves.getString("fonction_id")
                                                         , Groupes));
@@ -73,20 +62,14 @@ public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
         catch (SQLException SQLE){
             SQLE.printStackTrace();
         }
-        catch (ClassNotFoundException CNFE){
-            CNFE.printStackTrace();
-        }
         return null;
     }
 
     //Fonction permettant de créer un utilisateur à partir d'un login et un mot de passe.
     //Renvoie null si aucun compte ne correspond.
-    public Utilisateur GetUtilisateurConnection(String login, String mdp) {
+    public Utilisateur getUtilisateurConnection(String login, String mdp) {
         try{
-            Connection cnx = new ConnectionJDBC("com.mysql.cj.jdbc.Driver"
-                    , "jdbc:mysql://127.0.0.1:3306/IUT"
-                    , "root"
-                    , "an56im18").connection;
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
                     ("select u.utilisateur_id, u.fonction_id"
                             + " from utilisateurs u"
@@ -100,7 +83,7 @@ public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
                 if(DonneesEleves.getString("fonction_id").equals("ELV")){
                     return new UtilisateurEleve(DonneesEleves.getString("utilisateur_id")
                                                 , "ELV"
-                                                , GetGroupesbyEleve(DonneesEleves.getString("utilisateur_id")));
+                                                , getGroupesbyEleve(DonneesEleves.getString("utilisateur_id")));
                 }
                 //Renvoie une reference Utilisateur si c'est un simple utilisateur.
                 return new Utilisateur(DonneesEleves.getString("utilisateur_id"),
@@ -111,9 +94,6 @@ public class UtilisateurEleveDaoImpl implements UtilisateurEleveDao{
         }
         catch (SQLException SQLE){
             SQLE.printStackTrace();
-        }
-        catch (ClassNotFoundException CNFE){
-            CNFE.printStackTrace();
         }
         return null;
     }

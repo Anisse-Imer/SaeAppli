@@ -16,10 +16,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
     @Override
     public TrancheHoraire GetTrancheHoraireById(int id) {
         try{
-            Connection cnx = new ConnectionJDBC("com.mysql.cj.jdbc.Driver"
-                    , "jdbc:mysql://127.0.0.1:3306/IUT"
-                    , "root"
-                    , "an56im18").connection;
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
                     ("select *" +
                             "from tranches_horaires" +
@@ -40,18 +37,12 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         catch (SQLException SQLE){
             SQLE.printStackTrace();
         }
-        catch (ClassNotFoundException CNFE){
-            CNFE.printStackTrace();
-        }
         return null;
     }
 
     public int LastSemaine(){
         try{
-            Connection cnx = new ConnectionJDBC("com.mysql.cj.jdbc.Driver"
-                    , "jdbc:mysql://127.0.0.1:3306/IUT"
-                    , "root"
-                    , "an56im18").connection;
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
                     ("select MAX(semaine_id)" +
                             " from semaines");
@@ -68,18 +59,12 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         catch (SQLException SQLE){
             SQLE.printStackTrace();
         }
-        catch (ClassNotFoundException CNFE){
-            CNFE.printStackTrace();
-        }
         return -1;
     }
 
     public Date LastDateSemaines(){
         try{
-            Connection cnx = new ConnectionJDBC("com.mysql.cj.jdbc.Driver"
-                    , "jdbc:mysql://127.0.0.1:3306/IUT"
-                    , "root"
-                    , "an56im18").connection;
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
                     ("select MAX(semaine_fin)" +
                             " from semaines");
@@ -96,18 +81,12 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         catch (SQLException SQLE){
             SQLE.printStackTrace();
         }
-        catch (ClassNotFoundException CNFE){
-            CNFE.printStackTrace();
-        }
         return null;
     }
 
     public Date DateInterval(Date D1, int interval){
         try{
-            Connection cnx = new ConnectionJDBC("com.mysql.cj.jdbc.Driver"
-                    , "jdbc:mysql://127.0.0.1:3306/IUT"
-                    , "root"
-                    , "an56im18").connection;
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
                     ("select str_to_date(?, '%Y-%m-%d') + interval ? day as DINTERVAL" +
                             " from dual");
@@ -126,17 +105,11 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         catch (SQLException SQLE){
             SQLE.printStackTrace();
         }
-        catch (ClassNotFoundException CNFE){
-            CNFE.printStackTrace();
-        }
         return null;
     }
     public void AddSemaine(int SemaineId){
         try{
-            Connection cnx = new ConnectionJDBC("com.mysql.cj.jdbc.Driver"
-                    , "jdbc:mysql://127.0.0.1:3306/IUT"
-                    , "root"
-                    , "an56im18").connection;
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
             int LastSemaine = LastSemaine();
             Date LastDate = LastDateSemaines();
             if(LastSemaine != -1 && SemaineId > LastSemaine){
@@ -161,16 +134,10 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         catch (SQLException SQLE){
             SQLE.printStackTrace();
         }
-        catch (ClassNotFoundException CNFE){
-            CNFE.printStackTrace();
-        }
     }
     public String GetDateByTrancheHoraire(TrancheHoraire T1){
         try{
-            Connection cnx = new ConnectionJDBC("com.mysql.cj.jdbc.Driver"
-                    , "jdbc:mysql://127.0.0.1:3306/IUT"
-                    , "root"
-                    , "an56im18").connection;
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
                     ("select s.semaine_debut + interval jour_id - 1 DAY as StringDate" +
                             " from tranches_horaires th" +
@@ -190,18 +157,12 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         catch (SQLException SQLE){
             SQLE.printStackTrace();
         }
-        catch (ClassNotFoundException CNFE){
-            CNFE.printStackTrace();
-        }
         return null;
     }
 
     public void saveTrancheHoraire(TrancheHoraire T1) {
         try{
-            Connection cnx = new ConnectionJDBC("com.mysql.cj.jdbc.Driver"
-                    , "jdbc:mysql://127.0.0.1:3306/IUT"
-                    , "root"
-                    , "an56im18").connection;
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
                     ("INSERT INTO tranches_horaires(" +
                             "heure_debut" +
@@ -225,17 +186,11 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         catch (SQLException SQLE){
             SQLE.printStackTrace();
         }
-        catch (ClassNotFoundException CNFE){
-            CNFE.printStackTrace();
-        }
     }
 
     public int getIdTrancheHoraire(TrancheHoraire T1){
         try{
-            Connection cnx = new ConnectionJDBC("com.mysql.cj.jdbc.Driver"
-                    , "jdbc:mysql://127.0.0.1:3306/IUT"
-                    , "root"
-                    , "an56im18").connection;
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
                     ("select *" +
                             " from tranches_horaires" +
@@ -257,9 +212,6 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
         }
         catch (SQLException SQLE){
             SQLE.printStackTrace();
-        }
-        catch (ClassNotFoundException CNFE){
-            CNFE.printStackTrace();
         }
         return 0;
     }
