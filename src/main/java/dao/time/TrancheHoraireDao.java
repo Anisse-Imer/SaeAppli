@@ -17,5 +17,5 @@ public interface TrancheHoraireDao {
     public TrancheHoraire getTrancheHoraireExist(TrancheHoraire T1);
     public List<TrancheHoraire> getIndisponibiliteEnseignant(String IdEnseignant);
 
-
+    public List<TrancheHoraire> getIndisponibiliteEnseignantSemaine(String IdEnseignant, int IdSemaine);
 }

@@ -242,4 +242,34 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         }
         return null;
     }
+
+    public List<TrancheHoraire> getIndisponibiliteEnseignantSemaine(String IdEnseignant, int IdSemaine){
+        try{
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
+            PreparedStatement statement = cnx.prepareStatement
+                    ("select th.tranche_horaire" +
+                            " from indisponibilites_tuteurs i_d" +
+                            "    , tranches_horaires th" +
+                            " where i_d.utilisateur_id = ?" +
+                            "   and th.tranche_horaire = i_d.tranche_horaire" +
+                            "   and th.semaine_id = ?");
+            statement.setString(1, IdEnseignant);
+            statement.setInt(2, IdSemaine);
+            ResultSet IdTranchesHoraires = statement.executeQuery();
+            List<TrancheHoraire> Tranches = new ArrayList<TrancheHoraire>();
+            while (IdTranchesHoraires.next()){
+                TrancheHoraire TrancheSelonId = getTrancheHoraireById(
+                        IdTranchesHoraires.getInt("tranche_horaire"));
+                if(TrancheSelonId != null){
+                    Tranches.add(TrancheSelonId);
+                }
+            }
+            IdTranchesHoraires.close();
+            return Tranches;
+        }
+        catch (SQLException SQLE){
+            SQLE.printStackTrace();
+        }
+        return null;
+    }
 }

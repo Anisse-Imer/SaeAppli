@@ -5,8 +5,8 @@ import dao.time.TrancheHoraireDao;
 import dao.time.TrancheHoraireDaoImpl;
 import dao.users.UtilisateurDaoImpl;
 import models.cours.Cours;
+import models.time.TrancheHoraire;
 import models.usersFactory.User;
-import models.usersFactory.UtilisateurEleve;
 
 import java.util.*;
 
@@ -38,6 +38,26 @@ public class ProgrammePrincipal {
         }
     }
 
+    public static int choixFonctionnalite(List<Fonctionnalite> ListFonc){
+        System.out.println(ListFonc.toString());
+        List<String> Choix = new ArrayList<String>();
+        Choix.add("exit");
+        for (Fonctionnalite F :
+                ListFonc) {
+            Choix.add(Integer.toString(F.getNumeroF()));
+        }
+        String Entree = entree("Quelle fonctionnalite ? : "
+                , Choix);
+        if(Entree.equals("exit")){
+            return 0;
+        }
+        return Integer.parseInt(Entree);
+    }
+
+    public static void whisper(){
+
+    }
+
     public static User authentification(){
         Scanner console = new Scanner(System.in);
         String login;
@@ -53,17 +73,29 @@ public class ProgrammePrincipal {
         return user;
     }
 
-    public static void fonctionnaliteCoursSemaine(User user){
+    public static void redirect(User user){
+        if(user.getFonction().equals("ENS")){
+            enseignantMain(user);
+        }
+        else if(user.getFonction().equals("ELV")){
+            eleveMain(user);
+        }
+        else if(user.getFonction().equals("ADMIN")){
+            adminMain(user);
+        }
+    }
+
+    public static void fonctionnaListeCoursSemaine(User user){
         afficheSemaines();
         List<String> ListSemaine = new LinkedList<String>();
         ListSemaine.add("exit");
         for(int i = 1 ; i < new TrancheHoraireDaoImpl().lastSemaine() + 1; i++){
             ListSemaine.add(Integer.toString(i));
         }
-        String Entree = entree("L'emploi du temps de quelle semaine voulez-vous :"
+        String EntreeSemaine = entree("L'emploi du temps de quelle semaine voulez-vous :"
                                 , ListSemaine);
-        if(!Entree.equals("exit")){
-            List<Cours> ListCoursDeUser = new CoursDaoImpl().getCoursByUser(user,Integer.parseInt(Entree));
+        if(!EntreeSemaine.equals("exit")){
+            List<Cours> ListCoursDeUser = new CoursDaoImpl().getCoursByUser(user,Integer.parseInt(EntreeSemaine));
             if(ListCoursDeUser.isEmpty()){
                 System.out.println("Aucune cours cette semaine :\n");
             }
@@ -71,23 +103,7 @@ public class ProgrammePrincipal {
                 System.out.println(ListCoursDeUser.toString());
             }
         }
-        eleveMain(user);
-    }
-
-    public static int choixFonctionnalite(List<Fonctionnalite> ListFonc){
-        System.out.println(ListFonc.toString());
-        List<String> Choix = new ArrayList<String>();
-        Choix.add("exit");
-        for (Fonctionnalite F :
-             ListFonc) {
-            Choix.add(Integer.toString(F.getNumeroF()));
-        }
-        String Entree = entree("Quelle fonctionnalite ? : "
-                                , Choix);
-        if(Entree.equals("exit")){
-            return 0;
-        }
-        return Integer.parseInt(Entree);
+        redirect(user);
     }
 
     public static void eleveMain(User user){
@@ -99,23 +115,49 @@ public class ProgrammePrincipal {
                 System.out.println("Vous quittez :");
             }; break;
             case 1 : {
-                fonctionnaliteCoursSemaine(user);
+                fonctionnaListeCoursSemaine(user);
             }
             default:;
         }
     }
 
+    public static void fonctionnaliteIndispoSemaine(User user){
+        afficheSemaines();
+        List<String> ListSemaine = new LinkedList<String>();
+        ListSemaine.add("exit");
+        for(int i = 1 ; i < new TrancheHoraireDaoImpl().lastSemaine() + 1; i++){
+            ListSemaine.add(Integer.toString(i));
+        }
+        String EntreeSemaine = entree("Vos indisponibilités de quelle semaine voulez-vous :"
+                , ListSemaine);
+        if(!EntreeSemaine.equals("exit")){
+            List<TrancheHoraire> ListIndispoDeUser = new TrancheHoraireDaoImpl().getIndisponibiliteEnseignantSemaine(user.getId()
+                                                                                                                    , Integer.parseInt(EntreeSemaine));
+            if(ListIndispoDeUser.isEmpty() || ListIndispoDeUser == null){
+                System.out.println("Aucune indisponibilité :");
+            }
+            else {
+                System.out.println(ListIndispoDeUser.toString());
+            }
+        }
+        redirect(user);
+    }
+
     public static void enseignantMain(User user){
         List<Fonctionnalite> FoncEns = new ArrayList<Fonctionnalite>();
         FoncEns.add(new Fonctionnalite(1, "Lecture emploi du temps"));
+        FoncEns.add(new Fonctionnalite(2, "Lecture indisponibilités :"));
         int Choix = choixFonctionnalite(FoncEns);
         switch (Choix){
             case 0 : {
                 System.out.println("Vous quittez :");
             }; break;
             case 1 : {
-                fonctionnaliteCoursSemaine(user);
-            }
+                fonctionnaListeCoursSemaine(user);
+            };break;
+            case 2 : {
+                fonctionnaliteIndispoSemaine(user);
+            };break;
             default:;
         }
     }
