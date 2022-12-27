@@ -14,6 +14,10 @@ public class UtilisateurEleve implements User{
         this.groupes = groupes;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getFonction() {
         return fonction;
     }

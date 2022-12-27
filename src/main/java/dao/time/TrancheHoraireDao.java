@@ -1,4 +1,4 @@
-package dao;
+package dao.time;
 
 import models.time.TrancheHoraire;
 
@@ -16,5 +16,6 @@ public interface TrancheHoraireDao {
     public int getIdTrancheHoraire(TrancheHoraire T1);
     public TrancheHoraire getTrancheHoraireExist(TrancheHoraire T1);
     public List<TrancheHoraire> getIndisponibiliteEnseignant(String IdEnseignant);
+
 
 }

@@ -9,6 +9,10 @@ public class Utilisateur implements User{
         this.fonction = fonction;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getFonction() {
         return fonction;
     }

@@ -1,4 +1,4 @@
-package dao;
+package dao.users;
 
 import models.usersFactory.User;
 import models.usersFactory.Utilisateur;

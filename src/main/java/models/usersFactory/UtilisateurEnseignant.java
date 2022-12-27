@@ -16,6 +16,10 @@ public class UtilisateurEnseignant implements User{
         Indisponibilites = indisponibilites;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getFonction() {
         return fonction;
     }

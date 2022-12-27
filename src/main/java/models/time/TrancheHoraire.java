@@ -1,11 +1,12 @@
 package models.time;
 
-import dao.TrancheHoraireDaoImpl;
+import dao.time.TrancheHoraireDaoImpl;
+import models.cours.Lieu;
+import models.cours.Module;
 
 import java.security.InvalidParameterException;
 import java.sql.Date;
 import java.sql.Time;
-import java.util.List;
 
 public class TrancheHoraire {
     int id;
@@ -34,6 +35,9 @@ public class TrancheHoraire {
         this.IdJour = IdJour;
         this.Debut = debut;
         this.Fin = fin;
+    }
+
+    public TrancheHoraire(int tranche_horaire, int semaine_id, int jour_id, Time heure_debut, Time heure_fin, Lieu lieu_id, String groupe_id, String utilisateur_id, String type_cours_id, Module module_id_) {
     }
 
     public void SwitchTimes(Time A, Time B){

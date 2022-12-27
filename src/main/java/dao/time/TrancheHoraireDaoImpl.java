@@ -1,13 +1,14 @@
-package dao;
+package dao.time;
 
 import ConnectionJDBC.ConnectionJDBC;
+import dao.time.TrancheHoraireDao;
 import models.time.TrancheHoraire;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrancheHoraireDaoImpl implements TrancheHoraireDao{
+public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
 
     public TrancheHoraireDaoImpl(){
 

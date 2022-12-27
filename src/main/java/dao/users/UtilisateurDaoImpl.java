@@ -1,5 +1,7 @@
-package dao;
+package dao.users;
 
+import dao.time.TrancheHoraireDaoImpl;
+import dao.users.UtilisateurDao;
 import models.usersFactory.*;
 import ConnectionJDBC.ConnectionJDBC;
 
