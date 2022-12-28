@@ -71,10 +71,10 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
             PreparedStatement statement = cnx.prepareStatement
                     ("select u.utilisateur_id, u.fonction_id"
                             + " from utilisateurs u"
-                            + " where u.utilisateur_id like ?"
-                            + " and u.password like ?");
-            statement.setString(1, "%" + login + "%");
-            statement.setString(2, "%" + mdp + "%");
+                            + " where u.utilisateur_id = ?"
+                            + " and u.password = ?");
+            statement.setString(1, login);
+            statement.setString(2, mdp);
             ResultSet DonneesEleves = statement.executeQuery();
             while (DonneesEleves.next()){
                 //Renvoie une reference UtilisateurEleve si c'est un élève.
@@ -98,6 +98,42 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         }
         catch (SQLException SQLE){
             SQLE.printStackTrace();
+        }
+        return null;
+    }
+
+    //Permet à un compte administrateur d'obtenir les informations d'un autre utilisateur en ne possédant que mon login.
+    public User getUtilisateurConnectionById(User AdminUser, String login) {
+        if (AdminUser.getFonction().equals("ADMIN")) {
+            try {
+                Connection cnx = ConnectionJDBC.getInstance().getConnection();
+                PreparedStatement statement = cnx.prepareStatement
+                        ("select u.utilisateur_id, u.fonction_id"
+                                + " from utilisateurs u"
+                                + " where u.utilisateur_id = ?");
+                statement.setString(1, login);
+                ResultSet DonneesEleves = statement.executeQuery();
+                while (DonneesEleves.next()) {
+                    //Renvoie une reference UtilisateurEleve si c'est un élève.
+                    if (DonneesEleves.getString("fonction_id").equals("ELV")) {
+                        return new UserFactory().create(DonneesEleves.getString("utilisateur_id")
+                                , "ELV"
+                                , getGroupesbyEleve(DonneesEleves.getString("utilisateur_id")));
+                    } else if (DonneesEleves.getString("fonction_id").equals("ENS")) {
+                        return new UserFactory().create(DonneesEleves.getString("utilisateur_id")
+                                , "ENS"
+                                , new TrancheHoraireDaoImpl().getIndisponibiliteEnseignant(
+                                        DonneesEleves.getString("utilisateur_id")));
+                    } else if (DonneesEleves.getString("fonction_id").equals("ADMIN")) {
+                        return new UserFactory().create(DonneesEleves.getString("utilisateur_id")
+                                , DonneesEleves.getString("fonction_id"));
+                    }
+                }
+                DonneesEleves.close();
+            } catch (SQLException SQLE) {
+                SQLE.printStackTrace();
+            }
+            return null;
         }
         return null;
     }

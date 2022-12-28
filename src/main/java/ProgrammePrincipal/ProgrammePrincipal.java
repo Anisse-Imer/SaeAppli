@@ -8,6 +8,7 @@ import models.cours.Cours;
 import models.time.TrancheHoraire;
 import models.usersFactory.User;
 
+import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.*;
 
 public class ProgrammePrincipal {
@@ -162,8 +163,92 @@ public class ProgrammePrincipal {
         }
     }
 
+    public static void fonctionnaListeCoursSemaineSansRedirect(User user){
+        afficheSemaines();
+        List<String> ListSemaine = new LinkedList<String>();
+        ListSemaine.add("exit");
+        for(int i = 1 ; i < new TrancheHoraireDaoImpl().lastSemaine() + 1; i++){
+            ListSemaine.add(Integer.toString(i));
+        }
+        String EntreeSemaine = entree("L'emploi du temps de quelle semaine voulez-vous :"
+                , ListSemaine);
+        if(!EntreeSemaine.equals("exit")){
+            List<Cours> ListCoursDeUser = new CoursDaoImpl().getCoursByUser(user,Integer.parseInt(EntreeSemaine));
+            if(ListCoursDeUser.isEmpty()){
+                System.out.println("Aucune cours cette semaine :\n");
+            }
+            else {
+                System.out.println(ListCoursDeUser.toString());
+            }
+        }
+    }
+    public static void fonctionnaListeCoursSemaineEnAdmin(User user){
+        String login;
+        User UserAnalyse;
+        do {
+            System.out.println("Entrer le login de l'utilisateur dont vous voulez l'emploi du temps :");
+            login = new Scanner(System.in).next();
+            UserAnalyse = new UtilisateurDaoImpl().getUtilisateurConnectionById(user, login);
+        }while (UserAnalyse == null && (!login.equals("exit")));
+        if(UserAnalyse != null) {
+            System.out.println(UserAnalyse);
+            fonctionnaListeCoursSemaineSansRedirect(UserAnalyse);
+        }
+        redirect(user);
+    }
+
+    public static void fonctionnaliteIndispoSemaineSansRedirect(User user){
+        afficheSemaines();
+        List<String> ListSemaine = new LinkedList<String>();
+        ListSemaine.add("exit");
+        for(int i = 1 ; i < new TrancheHoraireDaoImpl().lastSemaine() + 1; i++){
+            ListSemaine.add(Integer.toString(i));
+        }
+        String EntreeSemaine = entree("Vos indisponibilités de quelle semaine voulez-vous :"
+                , ListSemaine);
+        if(!EntreeSemaine.equals("exit")){
+            List<TrancheHoraire> ListIndispoDeUser = new TrancheHoraireDaoImpl().getIndisponibiliteEnseignantSemaine(user.getId()
+                    , Integer.parseInt(EntreeSemaine));
+            if(ListIndispoDeUser.isEmpty() || ListIndispoDeUser == null){
+                System.out.println("Aucune indisponibilité :");
+            }
+            else {
+                System.out.println(ListIndispoDeUser.toString());
+            }
+        }
+    }
+    public static void fonctionnaliteIndispoSemaineEnAdmin(User user){
+        String login;
+        User UserAnalyse;
+        do {
+            System.out.println("Entrer le login de l'utilisateur dont vous voulez l'emploi du temps :");
+            login = new Scanner(System.in).next();
+            UserAnalyse = new UtilisateurDaoImpl().getUtilisateurConnectionById(user, login);
+        }while (UserAnalyse == null && (!login.equals("exit")));
+        if(UserAnalyse != null) {
+            System.out.println(UserAnalyse);
+            fonctionnaliteIndispoSemaineSansRedirect(UserAnalyse);
+        }
+        redirect(user);
+    }
+
     public static void adminMain(User user){
-        System.out.println("adminMain" + user.toString());
+        List<Fonctionnalite> FoncAdmin = new ArrayList<Fonctionnalite>();
+        FoncAdmin.add(new Fonctionnalite(1, "Lecture de l'emploi du temps d'un utilisateur :"));
+        FoncAdmin.add(new Fonctionnalite(2, "Lecture des indisponibilités d'un enseignant:"));
+        int Choix = choixFonctionnalite(FoncAdmin);
+        switch (Choix){
+            case 0 : {
+                System.out.println("Vous quittez :");
+            }; break;
+            case 1 : {
+                fonctionnaListeCoursSemaineEnAdmin(user);
+            };break;
+            case 2 : {
+                fonctionnaliteIndispoSemaineEnAdmin(user);
+            };break;
+            default:;
+        }
     }
 
     public static void application(User user){
