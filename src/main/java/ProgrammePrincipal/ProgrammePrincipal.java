@@ -39,6 +39,29 @@ public class ProgrammePrincipal {
         }
     }
 
+    public static String entreeSemaine(){
+        afficheSemaines();
+        List<String> ListSemaine = new LinkedList<String>();
+        ListSemaine.add("exit");
+        for(int i = 1 ; i < new TrancheHoraireDaoImpl().lastSemaine() + 1; i++){
+            ListSemaine.add(Integer.toString(i));
+        }
+        String EntreeSemaine = entree("L'emploi du temps de quelle semaine voulez-vous :"
+                , ListSemaine);
+        return EntreeSemaine;
+    }
+
+    public static User entreeUser(User user){
+        String login;
+        User UserAnalyse;
+        do {
+            System.out.println("Entrer le login de l'utilisateur dont vous voulez l'emploi du temps :");
+            login = new Scanner(System.in).next();
+            UserAnalyse = new UtilisateurDaoImpl().getUtilisateurConnectionById(user, login);
+        }while (UserAnalyse == null && (!login.equals("exit")));
+        return UserAnalyse;
+    }
+
     public static int choixFonctionnalite(List<Fonctionnalite> ListFonc){
         System.out.println(ListFonc.toString());
         List<String> Choix = new ArrayList<String>();
@@ -87,21 +110,14 @@ public class ProgrammePrincipal {
     }
 
     public static void fonctionnaListeCoursSemaine(User user){
-        afficheSemaines();
-        List<String> ListSemaine = new LinkedList<String>();
-        ListSemaine.add("exit");
-        for(int i = 1 ; i < new TrancheHoraireDaoImpl().lastSemaine() + 1; i++){
-            ListSemaine.add(Integer.toString(i));
-        }
-        String EntreeSemaine = entree("L'emploi du temps de quelle semaine voulez-vous :"
-                                , ListSemaine);
+        String EntreeSemaine = entreeSemaine();
         if(!EntreeSemaine.equals("exit")){
             List<Cours> ListCoursDeUser = new CoursDaoImpl().getCoursByUser(user,Integer.parseInt(EntreeSemaine));
             if(ListCoursDeUser.isEmpty()){
-                System.out.println("Aucune cours cette semaine :\n");
+                System.out.println("Aucun cours cette semaine :\n");
             }
             else {
-                System.out.println(ListCoursDeUser.toString());
+                System.out.println(new CoursDaoImpl().toString(ListCoursDeUser));
             }
         }
         redirect(user);
@@ -123,22 +139,16 @@ public class ProgrammePrincipal {
     }
 
     public static void fonctionnaliteIndispoSemaine(User user){
-        afficheSemaines();
-        List<String> ListSemaine = new LinkedList<String>();
-        ListSemaine.add("exit");
-        for(int i = 1 ; i < new TrancheHoraireDaoImpl().lastSemaine() + 1; i++){
-            ListSemaine.add(Integer.toString(i));
-        }
-        String EntreeSemaine = entree("Vos indisponibilités de quelle semaine voulez-vous :"
-                , ListSemaine);
+        String EntreeSemaine = entreeSemaine();
         if(!EntreeSemaine.equals("exit")){
             List<TrancheHoraire> ListIndispoDeUser = new TrancheHoraireDaoImpl().getIndisponibiliteEnseignantSemaine(user.getId()
                                                                                                                     , Integer.parseInt(EntreeSemaine));
             if(ListIndispoDeUser.isEmpty() || ListIndispoDeUser == null){
-                System.out.println("Aucune indisponibilité :");
+                System.out.println("Aucune indisponibilité(s) :");
             }
             else {
-                System.out.println(ListIndispoDeUser.toString());
+                System.out.println("Indisponibilités de " + new UtilisateurDaoImpl().getNomUser(user.getId()) + " pour la semaine " + EntreeSemaine + "\n"
+                        + new TrancheHoraireDaoImpl().toString(ListIndispoDeUser));
             }
         }
         redirect(user);
@@ -164,70 +174,59 @@ public class ProgrammePrincipal {
     }
 
     public static void fonctionnaListeCoursSemaineSansRedirect(User user){
-        afficheSemaines();
-        List<String> ListSemaine = new LinkedList<String>();
-        ListSemaine.add("exit");
-        for(int i = 1 ; i < new TrancheHoraireDaoImpl().lastSemaine() + 1; i++){
-            ListSemaine.add(Integer.toString(i));
-        }
-        String EntreeSemaine = entree("L'emploi du temps de quelle semaine voulez-vous :"
-                , ListSemaine);
+        String EntreeSemaine = entreeSemaine();
         if(!EntreeSemaine.equals("exit")){
             List<Cours> ListCoursDeUser = new CoursDaoImpl().getCoursByUser(user,Integer.parseInt(EntreeSemaine));
             if(ListCoursDeUser.isEmpty()){
                 System.out.println("Aucune cours cette semaine :\n");
             }
             else {
-                System.out.println(ListCoursDeUser.toString());
+                System.out.println("Indisponibilités de : " + user.getId() + " pour la semaine " + EntreeSemaine);
+                System.out.println(new CoursDaoImpl().toString(ListCoursDeUser));
             }
         }
     }
     public static void fonctionnaListeCoursSemaineEnAdmin(User user){
-        String login;
-        User UserAnalyse;
-        do {
-            System.out.println("Entrer le login de l'utilisateur dont vous voulez l'emploi du temps :");
-            login = new Scanner(System.in).next();
-            UserAnalyse = new UtilisateurDaoImpl().getUtilisateurConnectionById(user, login);
-        }while (UserAnalyse == null && (!login.equals("exit")));
+        User UserAnalyse = entreeUser(user);
         if(UserAnalyse != null) {
-            System.out.println(UserAnalyse);
             fonctionnaListeCoursSemaineSansRedirect(UserAnalyse);
         }
         redirect(user);
     }
 
     public static void fonctionnaliteIndispoSemaineSansRedirect(User user){
-        afficheSemaines();
-        List<String> ListSemaine = new LinkedList<String>();
-        ListSemaine.add("exit");
-        for(int i = 1 ; i < new TrancheHoraireDaoImpl().lastSemaine() + 1; i++){
-            ListSemaine.add(Integer.toString(i));
-        }
-        String EntreeSemaine = entree("Vos indisponibilités de quelle semaine voulez-vous :"
-                , ListSemaine);
+        String EntreeSemaine = entreeSemaine();
         if(!EntreeSemaine.equals("exit")){
             List<TrancheHoraire> ListIndispoDeUser = new TrancheHoraireDaoImpl().getIndisponibiliteEnseignantSemaine(user.getId()
                     , Integer.parseInt(EntreeSemaine));
             if(ListIndispoDeUser.isEmpty() || ListIndispoDeUser == null){
-                System.out.println("Aucune indisponibilité :");
+                System.out.println("Aucune indisponibilité : la semaine " + EntreeSemaine);
             }
             else {
-                System.out.println(ListIndispoDeUser.toString());
+                System.out.println("Indisponibilités de : " + user.getId() + " pour la semaine " + EntreeSemaine + "\n"
+                        + new TrancheHoraireDaoImpl().toString(ListIndispoDeUser));
             }
         }
     }
+
     public static void fonctionnaliteIndispoSemaineEnAdmin(User user){
-        String login;
-        User UserAnalyse;
-        do {
-            System.out.println("Entrer le login de l'utilisateur dont vous voulez l'emploi du temps :");
-            login = new Scanner(System.in).next();
-            UserAnalyse = new UtilisateurDaoImpl().getUtilisateurConnectionById(user, login);
-        }while (UserAnalyse == null && (!login.equals("exit")));
+        User UserAnalyse = entreeUser(user);
         if(UserAnalyse != null) {
-            System.out.println(UserAnalyse);
             fonctionnaliteIndispoSemaineSansRedirect(UserAnalyse);
+        }
+        redirect(user);
+    }
+
+    public static void fonctionnaliteCoursGroupeEnAdmin(User user){
+        System.out.println("Quel groupe : ");
+        String EntreeGroupe = new Scanner(System.in).next();
+        if(!EntreeGroupe.equals("exit")){
+            String EntreeSemaine = entreeSemaine();
+            if(!EntreeSemaine.equals("exit")) {
+                List<Cours> ListCoursGroupe = new CoursDaoImpl()
+                        .getCoursByGroup(EntreeGroupe, Integer.parseInt(EntreeSemaine));
+                new CoursDaoImpl().toString(ListCoursGroupe);
+            }
         }
         redirect(user);
     }
@@ -235,7 +234,8 @@ public class ProgrammePrincipal {
     public static void adminMain(User user){
         List<Fonctionnalite> FoncAdmin = new ArrayList<Fonctionnalite>();
         FoncAdmin.add(new Fonctionnalite(1, "Lecture de l'emploi du temps d'un utilisateur :"));
-        FoncAdmin.add(new Fonctionnalite(2, "Lecture des indisponibilités d'un enseignant:"));
+        FoncAdmin.add(new Fonctionnalite(2, "Lecture de l'emploi du temps d'un groupe :"));
+        FoncAdmin.add(new Fonctionnalite(3, "Lecture des indisponibilités d'un enseignant :"));
         int Choix = choixFonctionnalite(FoncAdmin);
         switch (Choix){
             case 0 : {
@@ -245,6 +245,9 @@ public class ProgrammePrincipal {
                 fonctionnaListeCoursSemaineEnAdmin(user);
             };break;
             case 2 : {
+                fonctionnaliteCoursGroupeEnAdmin(user);
+            };break;
+            case 3 : {
                 fonctionnaliteIndispoSemaineEnAdmin(user);
             };break;
             default:;

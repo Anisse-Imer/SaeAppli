@@ -9,11 +9,12 @@ public class Module {
         Nom = nom;
     }
 
+    public String getNom() {
+        return Nom;
+    }
+
     @Override
     public String toString() {
-        return "Module{" +
-                "Id=" + Id +
-                ", Nom='" + Nom + '\'' +
-                '}';
+        return Id + " : " + Nom;
     }
 }

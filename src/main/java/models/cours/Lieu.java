@@ -15,12 +15,12 @@ public class Lieu {
         Indisponibilites = indisponibilites;
     }
 
+    public String getId() {
+        return Id;
+    }
+
     @Override
     public String toString() {
-        return "Lieu{" +
-                "Id='" + Id + '\'' +
-                ", Capacite=" + Capacite +
-                ", Indisponibilites=" + Indisponibilites +
-                '}';
+        return "Id";
     }
 }

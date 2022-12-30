@@ -137,4 +137,27 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         }
         return null;
     }
+
+    public String getNomUser(String IdUser) {
+        try {
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
+            PreparedStatement statement = cnx.prepareStatement
+                    ("select u.utilisateur_nom, u.utilisateur_prenom"
+                            + " from utilisateurs u"
+                            + " where u.utilisateur_id = ?");
+            statement.setString(1, IdUser);
+            ResultSet ResultNoms = statement.executeQuery();
+            if (ResultNoms.next()) {
+                String NomPrenom = ResultNoms.getString("utilisateur_nom")
+                        + " " + ResultNoms.getString("utilisateur_prenom");
+                ResultNoms.close();
+                return NomPrenom;
+            }
+        }
+        catch(SQLException SQLE){
+                SQLE.printStackTrace();
+            }
+        return "";
+    }
+
 }

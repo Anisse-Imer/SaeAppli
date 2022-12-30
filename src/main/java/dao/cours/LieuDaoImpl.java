@@ -1,7 +1,6 @@
 package dao.cours;
 
 import ConnectionJDBC.ConnectionJDBC;
-import models.cours.Cours;
 import models.cours.Lieu;
 import models.time.TrancheHoraire;
 
@@ -9,12 +8,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LieuDaoImpl {
-    public Lieu getLieuById(String IdLieu){
+public class LieuDaoImpl implements LieuDao{
+    public Lieu get(String IdLieu){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement

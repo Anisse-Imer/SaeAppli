@@ -1,19 +1,15 @@
 package dao.cours;
 
 import ConnectionJDBC.ConnectionJDBC;
-import models.cours.Cours;
 import models.cours.Module;
-import models.time.TrancheHoraire;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
-public class ModuleDaoImpl {
-    public Module getModuleById(int IdModule){
+public class ModuleDaoImpl implements ModuleDao{
+    public Module get(int IdModule){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
@@ -36,7 +32,7 @@ public class ModuleDaoImpl {
     }
 
     public static void main(String[] args) {
-        Module m = new ModuleDaoImpl().getModuleById(2);
+        Module m = new ModuleDaoImpl().get(2);
         System.out.println(m);
     }
 }

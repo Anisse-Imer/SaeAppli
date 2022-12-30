@@ -10,9 +10,7 @@ import java.util.List;
 
 public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
 
-    public TrancheHoraireDaoImpl(){
-
-    }
+    public TrancheHoraireDaoImpl(){}
 
     @Override
     public TrancheHoraire getTrancheHoraireById(int id) {
@@ -271,5 +269,24 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
             SQLE.printStackTrace();
         }
         return null;
+    }
+
+    public String toString(TrancheHoraire T1){
+        if(T1 != null) {
+            String Date = getDateByTrancheHoraire(T1);
+            return "[" + T1.getId() + " : " + Date + " : de " + T1.getDebut().toString() + " à " + T1.getFin() + "]";
+        }
+        return "";
+    }
+
+    public String toString(List<TrancheHoraire> LT1) {
+        String Compilation = "";
+        if (LT1 != null){
+            for (TrancheHoraire T1 :
+                    LT1) {
+                Compilation = Compilation + toString(T1) + "\n";
+            }
+        }
+        return Compilation;
     }
 }

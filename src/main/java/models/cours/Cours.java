@@ -46,4 +46,32 @@ public class Cours {
                 ", Module=" + Module +
                 '}';
     }
+
+    public int getId() {
+        return Id;
+    }
+
+    public TrancheHoraire getTemporalite() {
+        return Temporalite;
+    }
+
+    public Lieu getEmplacement() {
+        return Emplacement;
+    }
+
+    public String getGroupeId() {
+        return GroupeId;
+    }
+
+    public String getEnseignantId() {
+        return EnseignantId;
+    }
+
+    public String getTypeCours() {
+        return TypeCours;
+    }
+
+    public models.cours.Module getModule() {
+        return Module;
+    }
 }
