@@ -15,6 +15,25 @@ import java.util.List;
 public class UtilisateurDaoImpl implements UtilisateurDao {
     public UtilisateurDaoImpl(){}
 
+    public List<String> getAllGroupes(){
+        try{
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
+            PreparedStatement StatementGroupes = cnx.prepareStatement
+                    ("select groupe_id from groupes");
+            ResultSet DonneesGroupes = StatementGroupes.executeQuery();
+            List<String> Groupes = new LinkedList<String>();
+            while (DonneesGroupes.next()){
+                Groupes.add(DonneesGroupes.getString("groupe_id"));
+            }
+            DonneesGroupes.close();
+            return Groupes;
+        }
+        catch (SQLException SQLE){
+            SQLE.printStackTrace();
+        }
+        return null;
+    }
+
     public List<String> getGroupesbyEleve(String idEleve){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -160,4 +179,8 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         return "";
     }
 
+    public static void main(String[] args) {
+        List<String> tousgroupes = new UtilisateurDaoImpl().getAllGroupes();
+        System.out.println(tousgroupes);
+    }
 }

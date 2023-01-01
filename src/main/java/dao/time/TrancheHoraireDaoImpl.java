@@ -1,7 +1,6 @@
 package dao.time;
 
 import ConnectionJDBC.ConnectionJDBC;
-import dao.time.TrancheHoraireDao;
 import models.time.TrancheHoraire;
 
 import java.sql.*;
@@ -13,7 +12,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
     public TrancheHoraireDaoImpl(){}
 
     @Override
-    public TrancheHoraire getTrancheHoraireById(int id) {
+    public TrancheHoraire get(int id) {
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement statement = cnx.prepareStatement
@@ -226,7 +225,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
             ResultSet IdTranchesHoraires = statement.executeQuery();
             List<TrancheHoraire> Tranches = new ArrayList<TrancheHoraire>();
             while (IdTranchesHoraires.next()){
-                TrancheHoraire TrancheSelonId = getTrancheHoraireById(
+                TrancheHoraire TrancheSelonId = get(
                                                 IdTranchesHoraires.getInt("tranche_horaire"));
                 if(TrancheSelonId != null){
                     Tranches.add(TrancheSelonId);
@@ -256,7 +255,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
             ResultSet IdTranchesHoraires = statement.executeQuery();
             List<TrancheHoraire> Tranches = new ArrayList<TrancheHoraire>();
             while (IdTranchesHoraires.next()){
-                TrancheHoraire TrancheSelonId = getTrancheHoraireById(
+                TrancheHoraire TrancheSelonId = get(
                         IdTranchesHoraires.getInt("tranche_horaire"));
                 if(TrancheSelonId != null){
                     Tranches.add(TrancheSelonId);

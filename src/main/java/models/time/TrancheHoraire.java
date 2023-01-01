@@ -7,6 +7,7 @@ import models.cours.Module;
 import java.security.InvalidParameterException;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.Duration;
 
 public class TrancheHoraire {
     int id;
@@ -82,6 +83,15 @@ public class TrancheHoraire {
         return false;
     }
 
+    public Time difference(){
+        long Difference = 0;
+        if(Debut != null && Fin != null) {
+            Difference = Math.abs(this.Fin.getTime() - this.Debut.getTime());
+            return new Time(Difference - new Time(2, 0, 0).getTime());
+        }
+        return new Time(0,0,0);
+    }
+
     @Override
     public String toString() {
         return "TrancheHoraire{" +
@@ -92,6 +102,7 @@ public class TrancheHoraire {
                 ", Fin=" + Fin +
                 '}';
     }
+
 
     public static void main(String[] args) {
         TrancheHoraire t1 = new TrancheHoraire(0, 1, 1 ,
@@ -115,11 +126,17 @@ public class TrancheHoraire {
         thDAO.addSemaine(4);
 
         TrancheHoraire t3 = new TrancheHoraire(0, 6, 3 ,
-                new Time(0,0,0),
-                new Time(5,30,0));
+                new Time(1,0,0),
+                new Time(3,0,0));
 
         System.out.println(t3.toString());
         t3 = thDAO.getTrancheHoraireExist(t3);
         System.out.println(t3.toString());
+
+        long time = Math.abs(t3.getFin().getTime() - t3.getDebut().getTime());
+        System.out.println(t3.difference().toString());
+
+        Time t5 = new Time(25,0,0);
+        System.out.println(t5.toString());
     }
 }

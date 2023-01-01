@@ -6,7 +6,7 @@ import java.sql.Date;
 import java.util.List;
 
 public interface TrancheHoraireDao {
-    public TrancheHoraire getTrancheHoraireById(int id);
+    public TrancheHoraire get(int id);
     public int lastSemaine();
     public Date lastDateSemaines();
     public Date dateInterval(Date D1, int interval);

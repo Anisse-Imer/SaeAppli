@@ -13,6 +13,14 @@ public class Module {
         return Nom;
     }
 
+    public int getId() {
+        return Id;
+    }
+
+    public void setNom(String nom) {
+        Nom = nom;
+    }
+
     @Override
     public String toString() {
         return Id + " : " + Nom;
