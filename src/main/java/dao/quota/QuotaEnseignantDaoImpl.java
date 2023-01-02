@@ -258,8 +258,8 @@ public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
     public String toString(QuotaEnseignant Q){
         if(Q != null){
             return new UtilisateurDaoImpl().getNomUser(Q.getIdEnseignant()) + " : " + Q.getModuleQ().getNom()
-                    + " " + Q.getTypeCours() + "\nHeures prévues : " + Q.getQuantite() + "Heures planifiées : "
-                    + Q.getQuantiteHeurePlanifie() + "heure(s):" + Q.getQuantiteMinutesPlafnifie() + "minute(s)\n";
+                    + " " + Q.getTypeCours() + "\nHeures prévues : " + Q.getQuantite() + " Heures planifiées : "
+                    + Q.getQuantiteHeurePlanifie() + " heure(s):" + Q.getQuantiteMinutesPlafnifie() + " minute(s)\n";
         }
         return "";
     }

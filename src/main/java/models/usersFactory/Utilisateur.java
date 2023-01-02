@@ -1,8 +1,9 @@
 package models.usersFactory;
 
+//Class permettant de stocker un utilisateur admin ou autre.
 public class Utilisateur implements User{
     public String id;
-    public String fonction;
+    public String fonction;     //Fonction de l'utilisateur. (= ADMIN ou AUTRE)
 
     public Utilisateur(String id, String fonction){
         this.id = id;

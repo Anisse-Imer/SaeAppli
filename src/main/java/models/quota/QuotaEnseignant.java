@@ -2,13 +2,14 @@ package models.quota;
 
 import models.cours.Module;
 
+//Permet de stocker les heures qui devront être réalisées par l'enseignant.
 public class QuotaEnseignant {
-    String IdEnseignant;
-    String TypeCours;
-    Module ModuleQ;
-    int Quantite;
-    int QuantiteHeurePlanifie;
-    int QuantiteMinutesPlafnifie;
+    String IdEnseignant;        //Id de l'enseignant assigné.
+    String TypeCours;           //Type de cours à réaliser.
+    Module ModuleQ;             //Module a enseigné.
+    int Quantite;               //Quantité d'heures que doit réaliser l'enseignant.
+    int QuantiteHeurePlanifie;  //Les heures déjà planifiées dans l'emploi du temps.
+    int QuantiteMinutesPlafnifie;   //Les minutes déjà planifiées dans l'emploi du temps.
 
     public QuotaEnseignant(String idEnseignant, String typeCours, Module moduleQ, int quantite, int quantiteHeurePlanifie, int quantiteMinutesPlafnifie) {
         IdEnseignant = idEnseignant;

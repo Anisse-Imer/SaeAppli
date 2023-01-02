@@ -1,13 +1,8 @@
 package models.time;
-
-import dao.time.TrancheHoraireDaoImpl;
 import models.cours.Lieu;
 import models.cours.Module;
-
 import java.security.InvalidParameterException;
-import java.sql.Date;
 import java.sql.Time;
-import java.time.Duration;
 
 public class TrancheHoraire {
     int id;
@@ -16,6 +11,7 @@ public class TrancheHoraire {
     Time Debut;
     Time Fin;
 
+    //Constructeur par défaut.
     public TrancheHoraire() {
         id = -1;
         IdSemaine = -1;
@@ -24,6 +20,7 @@ public class TrancheHoraire {
         this.Fin = new Time(0,0,0);
     }
 
+    //Constructeur vérifiant si les données sont correctes.
     public TrancheHoraire(int id, int IdSemaine, int IdJour, Time debut, Time fin) throws InvalidParameterException{
         if(debut == null || fin == null)
             throw new InvalidParameterException("TrancheHoraire : debut/fin null");
@@ -41,6 +38,7 @@ public class TrancheHoraire {
     public TrancheHoraire(int tranche_horaire, int semaine_id, int jour_id, Time heure_debut, Time heure_fin, Lieu lieu_id, String groupe_id, String utilisateur_id, String type_cours_id, Module module_id_) {
     }
 
+    //Permet d'échanger les références de deux Time.
     public void SwitchTimes(Time A, Time B){
         Time C = A ;
         A = B;
@@ -71,20 +69,20 @@ public class TrancheHoraire {
         return Fin;
     }
 
+    //Si this chevauche TempTest alors renvoie false, si l'inverse true.
     public boolean IsNotIn(TrancheHoraire TempsTest){
         if(this.IdSemaine != TempsTest.IdSemaine || this.IdJour != TempsTest.IdJour)
             return true;
-        if(((this.Debut.compareTo(TempsTest.Debut) == -1 || this.Debut.compareTo(TempsTest.Debut) == 0)
-                && (this.Fin.compareTo(TempsTest.Debut) == -1 || this.Fin.compareTo(TempsTest.Debut) == 0)))
+        if(((this.Debut.compareTo(TempsTest.Debut) <= 0) && (this.Fin.compareTo(TempsTest.Debut) <= 0)))
             return true;
-        if(((this.Debut.compareTo(TempsTest.Fin) == 1 || this.Debut.compareTo(TempsTest.Fin) == 0)
-                && (this.Fin.compareTo(TempsTest.Fin) == 1 || this.Fin.compareTo(TempsTest.Fin) == 0)))
+        if(((this.Debut.compareTo(TempsTest.Fin)) >= 0 && (this.Fin.compareTo(TempsTest.Fin) >= 0)))
             return true;
         return false;
     }
 
+    //Calcul la différence de temps entre debut et fin.
     public Time difference(){
-        long Difference = 0;
+        long Difference;
         if(Debut != null && Fin != null) {
             Difference = Math.abs(this.Fin.getTime() - this.Debut.getTime());
             return new Time(Difference - new Time(2, 0, 0).getTime());
@@ -101,42 +99,5 @@ public class TrancheHoraire {
                 ", Debut=" + Debut +
                 ", Fin=" + Fin +
                 '}';
-    }
-
-
-    public static void main(String[] args) {
-        TrancheHoraire t1 = new TrancheHoraire(0, 1, 1 ,
-                new Time(0,0,0),
-                new Time(5,30,0));
-        TrancheHoraire t2 = new TrancheHoraire(1, 1, 1 ,
-                new Time(5,0,0),
-                new Time(10,0,0));
-
-        System.out.println(t2.toString());
-        TrancheHoraireDaoImpl thDAO = new TrancheHoraireDaoImpl();
-        System.out.println(thDAO.getDateByTrancheHoraire(t2));
-
-        System.out.println(thDAO.lastSemaine());
-
-        Date d1 = thDAO.lastDateSemaines();
-        Date d2 = thDAO.dateInterval(d1, 7);
-        System.out.println(d1.toString());
-        System.out.println(d2.toString());
-
-        thDAO.addSemaine(4);
-
-        TrancheHoraire t3 = new TrancheHoraire(0, 6, 3 ,
-                new Time(1,0,0),
-                new Time(3,0,0));
-
-        System.out.println(t3.toString());
-        t3 = thDAO.getTrancheHoraireExist(t3);
-        System.out.println(t3.toString());
-
-        long time = Math.abs(t3.getFin().getTime() - t3.getDebut().getTime());
-        System.out.println(t3.difference().toString());
-
-        Time t5 = new Time(25,0,0);
-        System.out.println(t5.toString());
     }
 }

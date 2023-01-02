@@ -203,7 +203,7 @@ public class QuotaGroupeDaoImpl implements QuotaGroupeDao{
     public String toString(QuotaGroupe Q){
         if(Q != null) {
             return "Semaine " + Q.getIdSemaine() + " : Groupe " + Q.getIdGroupe() + " : "
-                    + Q.getTypeCours() + " : " + Q.getModuleQ().getNom();
+                    + Q.getTypeCours() + " : " + Q.getModuleQ().getNom() + " : " + Q.getQuantite();
         }
         return "";
     }

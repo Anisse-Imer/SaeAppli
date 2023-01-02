@@ -6,8 +6,13 @@ import java.util.List;
 
 public class UserFactory {
 
+    //Méthode permettant d'accéder à la Factory.
     public UserFactory(){}
 
+    //Méthode retournant un User selon sa fonction.
+    //ELV -> UtilisateurEleve
+    //ENS -> UtilisateurEnseignant
+    //ADMIN -> Utilisateur
     public User create(String Id, String Fonction, Object ...parameters){
         User user;
         switch (Fonction){

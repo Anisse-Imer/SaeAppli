@@ -4,9 +4,9 @@ import java.util.List;
 
 public class UtilisateurEleve implements User{
 
-    public String id;
-    public String fonction;
-    public List<String> groupes;
+    public String id;               //Id de l'utilisateur.
+    public String fonction;         //Fonction de l'utilisateur (=ELV obligatoirement)
+    public List<String> groupes;    //Liste des Id des groupes auxquels l'élève.
 
     public UtilisateurEleve(String id, String fonction, List<String> groupes) {
         this.id = id;

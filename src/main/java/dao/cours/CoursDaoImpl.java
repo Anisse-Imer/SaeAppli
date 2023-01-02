@@ -54,7 +54,8 @@ public class CoursDaoImpl implements CoursDao{
             List<Cours> ListeCours = new ArrayList<>();
             while (Cours.next()){
                 ListeCours.add(new Cours(Cours.getInt("cours_id")
-                                        , new TrancheHoraire(Cours.getInt("tranche_horaire")                                   , Cours.getInt("semaine_id")
+                                                            , new TrancheHoraire(Cours.getInt("tranche_horaire")
+                                                            , Cours.getInt("semaine_id")
                                                             , Cours.getInt("jour_id")
                                                             , Cours.getTime("heure_debut")
                                                             , Cours.getTime("heure_fin"))

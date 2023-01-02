@@ -1,19 +1,20 @@
 package models.usersFactory;
 
 import models.time.TrancheHoraire;
-
 import java.util.List;
 
+//Class permettant de stocker les utilisateurs enseignants et leurs indisponibilités.
+//Table utilisateurs et indisponibilités_tuteurs.
 public class UtilisateurEnseignant implements User{
 
     public String id;
-    public String fonction;
-    public List<TrancheHoraire> Indisponibilites;
+    public String fonction;     //Fonction (=ENS obligatoirement)
+    public List<TrancheHoraire> Indisponibilites;   //Liste des indisponibilités de l'enseignant.
 
     public UtilisateurEnseignant(String id, String fonction, List<TrancheHoraire> indisponibilites) {
         this.id = id;
         this.fonction = fonction;
-        Indisponibilites = indisponibilites;
+        this.Indisponibilites = indisponibilites;
     }
 
     public String getId() {
