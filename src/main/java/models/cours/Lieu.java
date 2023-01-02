@@ -29,6 +29,10 @@ public class Lieu {
 
     @Override
     public String toString() {
-        return "Id";
+        return "Lieu{" +
+                "Id='" + Id + '\'' +
+                ", Capacite=" + Capacite +
+                ", Indisponibilites=" + Indisponibilites +
+                '}';
     }
 }

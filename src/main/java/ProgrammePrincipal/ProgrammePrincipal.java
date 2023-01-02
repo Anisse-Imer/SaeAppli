@@ -1,6 +1,7 @@
 package ProgrammePrincipal;
 
 import dao.cours.CoursDaoImpl;
+import dao.cours.LieuDaoImpl;
 import dao.cours.ModuleDaoImpl;
 import dao.quota.QuotaEnseignantDaoImpl;
 import dao.quota.QuotaGroupeDaoImpl;
@@ -8,6 +9,7 @@ import dao.time.TrancheHoraireDao;
 import dao.time.TrancheHoraireDaoImpl;
 import dao.users.UtilisateurDaoImpl;
 import models.cours.Cours;
+import models.cours.Lieu;
 import models.cours.Module;
 import models.quota.QuotaEnseignant;
 import models.quota.QuotaGroupe;
@@ -327,6 +329,51 @@ public class ProgrammePrincipal {
         }
     }
 
+    public static void fonctionnaliteAllUsers(User user){
+        List<User> AllUsers = new UtilisateurDaoImpl().getAll();
+        if(AllUsers != null && !AllUsers.isEmpty()) {
+            for (User U :
+                    AllUsers) {
+                if(U != null) {
+                    System.out.println(new UtilisateurDaoImpl().getNomUser(U.getId())
+                            + " : " + U.getId() + " : " + U.getFonction());
+                }
+            }
+        }
+        redirect(user);
+    }
+
+    public static void fonctionnaliteAllModules(User user){
+        List<Module> AllModule = new ModuleDaoImpl().getAll();
+        if(AllModule != null && !AllModule.isEmpty()) {
+            for (Module M :
+                    AllModule) {
+                System.out.println(M.getId() + " : " + M.getNom());
+            }
+        }
+        redirect(user);
+    }
+
+    public static void fonctionnaliteLieu(User user){
+        List<Lieu> AllLieu = new LieuDaoImpl().getAll();
+        if(AllLieu != null) {
+            List<String> EntreePossibleLieu = new LinkedList<String>();
+            EntreePossibleLieu.add("exit");
+            for (Lieu L :
+                    AllLieu) {
+                if(L != null) {
+                    EntreePossibleLieu.add(L.getId());
+                }
+            }
+            System.out.println("Entrez en toutes lettres l'option :\n" + EntreePossibleLieu);
+            String EntreeLieu = entree("\nDe quel lieu voulez-vous les informations? :", EntreePossibleLieu);
+            if(!EntreeLieu.equals("exit")){
+                Lieu LieuInforme = new LieuDaoImpl().get(EntreeLieu);
+                System.out.println(new LieuDaoImpl().toString(LieuInforme));
+            }
+        }
+        redirect(user);
+    }
     public static void adminMain(User user){
         List<Fonctionnalite> FoncAdmin = new ArrayList<Fonctionnalite>();
         FoncAdmin.add(new Fonctionnalite(1, "Lecture de l'emploi du temps d'un utilisateur :"));
@@ -334,6 +381,9 @@ public class ProgrammePrincipal {
         FoncAdmin.add(new Fonctionnalite(3, "Lecture des indisponibilités d'un enseignant :"));
         FoncAdmin.add(new Fonctionnalite(4, "Lecture des quantités d'heures attribuées à un professeur pour un module :"));
         FoncAdmin.add(new Fonctionnalite(5, "Lecture des quantités d'heures attribuées à un groupe :"));
+        FoncAdmin.add(new Fonctionnalite(6, "Informations utilisateur :"));
+        FoncAdmin.add(new Fonctionnalite(7, "Modules de cours :"));
+        FoncAdmin.add(new Fonctionnalite(8, "Lecture informations lieux"));
         int Choix = choixFonctionnalite(FoncAdmin);
         switch (Choix){
             case 0 : {
@@ -353,6 +403,15 @@ public class ProgrammePrincipal {
             };break;
             case 5 : {
                 fonctionnaliteHeuresGroupe(user);
+            };break;
+            case 6 : {
+                fonctionnaliteAllUsers(user);
+            };break;
+            case 7 : {
+                fonctionnaliteAllModules(user);
+            };break;
+            case 8 : {
+                fonctionnaliteLieu(user);
             };break;
             default:;
         }

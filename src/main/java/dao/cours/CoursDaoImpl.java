@@ -273,9 +273,4 @@ public class CoursDaoImpl implements CoursDao{
         }
         return null;
     }
-
-    public static void main(String[] args) {
-        List<Cours> Acours = new CoursDaoImpl().getAll();
-        System.out.println(Acours);
-    }
 }

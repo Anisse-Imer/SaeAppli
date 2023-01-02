@@ -33,11 +33,6 @@ public class ModuleDaoImpl implements ModuleDao{
         return null;
     }
 
-    public static void main(String[] args) {
-        Module m = new ModuleDaoImpl().get(2);
-        System.out.println(new ModuleDaoImpl().delete(m));
-    }
-
     @Override
     public List<Module> getAll() {
         try{

@@ -330,16 +330,4 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
             }
         return "";
     }
-
-    public static void main(String[] args) {
-        List<String> tousgroupes = new UtilisateurDaoImpl().getAllGroupes();
-        System.out.println(tousgroupes);
-
-        List<User> userA = new UtilisateurDaoImpl().getAll();
-
-        User user = new UtilisateurEleve("P904", "ELV", null);
-        new UtilisateurDaoImpl().save(user);
-        System.out.println(user);
-        new UtilisateurDaoImpl().saveInfo(user,"101060", "Bento", "Sheeeeh", "0344455658", "bento");
-    }
 }

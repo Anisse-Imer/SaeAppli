@@ -1,6 +1,7 @@
 package dao.cours;
 
 import ConnectionJDBC.ConnectionJDBC;
+import dao.time.TrancheHoraireDaoImpl;
 import models.cours.Lieu;
 import models.time.TrancheHoraire;
 
@@ -19,12 +20,10 @@ public class LieuDaoImpl implements LieuDao{
             PreparedStatement statement = cnx.prepareStatement
                     ("select l.lieu_id" +
                             "  , l.capacite" +
-                            "  , th.*" +
+                            "  , rs.tranche_horaire" +
                             " from lieux l" +
                             "    , reservations_lieux rs" +
-                            "    , tranches_horaires th" +
                             "  where l.lieu_id = rs.lieu_id" +
-                            "    and th.tranche_horaire = rs.tranche_horaire" +
                             "    and l.lieu_id = ?");
             statement.setString(1, Id);
             ResultSet ListLieu = statement.executeQuery();
@@ -33,19 +32,9 @@ public class LieuDaoImpl implements LieuDao{
                 String id = ListLieu.getString("lieu_id");
                 int capacite = ListLieu.getInt("capacite");
                 List<TrancheHoraire> Indispo = new LinkedList<TrancheHoraire>();
-                Indispo.add(new TrancheHoraire(ListLieu.getInt("tranche_horaire")
-                        , ListLieu.getInt("semaine_id")
-                        , ListLieu.getInt("jour_id")
-                        , ListLieu.getTime("heure_debut")
-                        , ListLieu.getTime("heure_fin")));
-                //Puis on récupère le reste des indsiponibilités.
-                while (ListLieu.next()){
-                    Indispo.add(new TrancheHoraire(ListLieu.getInt("tranche_horaire")
-                            , ListLieu.getInt("semaine_id")
-                            , ListLieu.getInt("jour_id")
-                            , ListLieu.getTime("heure_debut")
-                            , ListLieu.getTime("heure_fin")));
-                }
+                do {
+                    Indispo.add(new TrancheHoraireDaoImpl().get(ListLieu.getInt("tranche_horaire")));
+                } while (ListLieu.next());
                 Lieu lieu = new Lieu(id, capacite, Indispo);
                 ListLieu.close();
                 return lieu;
@@ -138,5 +127,27 @@ public class LieuDaoImpl implements LieuDao{
             }
         }
         return 0;
+    }
+
+    @Override
+    public String toString(Lieu LieuS) {
+        if(LieuS.getIndisponibilites() != null) {
+            return LieuS.getId() + " : " + LieuS.getCapacite() + " : Indisponibilités"
+                    + "\n" +new TrancheHoraireDaoImpl().toString(LieuS.getIndisponibilites());
+        }
+        return LieuS.getId() + " : " + LieuS.getCapacite();
+    }
+
+    @Override
+    public String toString(List<Lieu> ListeLieuS) {
+        if(ListeLieuS != null){
+            String compilationLieux = "";
+            for (Lieu l:
+                 ListeLieuS) {
+                compilationLieux = toString(l);
+            }
+            return compilationLieux;
+        }
+        return "";
     }
 }
