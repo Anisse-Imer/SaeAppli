@@ -1,18 +1,18 @@
 package dao.time;
 
+import dao.DAO;
+import dao.DAOInt;
 import models.time.TrancheHoraire;
 
 import java.sql.Date;
 import java.util.List;
 
-public interface TrancheHoraireDao {
-    public TrancheHoraire get(int id);
+public interface TrancheHoraireDao extends DAO<TrancheHoraire>, DAOInt<TrancheHoraire> {
     public int lastSemaine();
     public Date lastDateSemaines();
     public Date dateInterval(Date D1, int interval);
     public void addSemaine(int SemaineId);
     public String getDateByTrancheHoraire(TrancheHoraire T1);
-    public void saveTrancheHoraire(TrancheHoraire T1);
     public int getIdTrancheHoraire(TrancheHoraire T1);
     public TrancheHoraire getTrancheHoraireExist(TrancheHoraire T1);
     public List<TrancheHoraire> getIndisponibiliteEnseignant(String IdEnseignant);

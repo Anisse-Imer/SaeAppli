@@ -39,11 +39,6 @@ public class ModuleDaoImpl implements ModuleDao{
     }
 
     @Override
-    public Module get(long id) {
-        return get((int) id);
-    }
-
-    @Override
     public List<Module> getAll() {
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -56,6 +51,7 @@ public class ModuleDaoImpl implements ModuleDao{
                 do {
                     Modules.add(get(ResultModule.getInt("module_id")));
                 }while (ResultModule.next());
+                ResultModule.close();
                 return Modules;
             }
         }

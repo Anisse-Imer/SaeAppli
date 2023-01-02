@@ -19,6 +19,14 @@ public class Lieu {
         return Id;
     }
 
+    public int getCapacite() {
+        return Capacite;
+    }
+
+    public List<TrancheHoraire> getIndisponibilites() {
+        return Indisponibilites;
+    }
+
     @Override
     public String toString() {
         return "Id";

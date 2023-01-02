@@ -101,6 +101,159 @@ public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
         return null;
     }
 
+    public QuotaEnseignant get(String IdEnseignant, String TypeCours, int IdModule){
+        try{
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
+            PreparedStatement statement = cnx.prepareStatement
+                    ("select *" +
+                            " from quotas" +
+                            " where utilisateur_id = ?" +
+                            "   and type_cours_id = ?" +
+                            "   and module_id = ?");
+            statement.setString(1, IdEnseignant);
+            statement.setString(2, TypeCours);
+            statement.setInt(3, IdModule);
+            ResultSet resultSetQuota = statement.executeQuery();
+            if(resultSetQuota.next()){
+                QuotaEnseignant Quota;
+                int[] Quantites = quantiteModuleTypeCours(IdEnseignant
+                        , resultSetQuota.getString("type_cours_id")
+                        , IdModule);
+                if(Quantites != null) {
+                    Quota = new QuotaEnseignant(resultSetQuota.getString("utilisateur_id")
+                            , resultSetQuota.getString("type_cours_id")
+                            , new ModuleDaoImpl().get(IdModule)
+                            , resultSetQuota.getInt("nombre_heures_quota")
+                            , Quantites[0]
+                            , Quantites[1]);
+                }
+                else {
+                    Quota = new QuotaEnseignant(resultSetQuota.getString("utilisateur_id")
+                            , resultSetQuota.getString("type_cours_id")
+                            , new ModuleDaoImpl().get(IdModule)
+                            , resultSetQuota.getInt("nombre_heures_quota")
+                            , 0
+                            , 0);
+                }
+                resultSetQuota.close();
+                return Quota;
+            }
+        }
+        catch (SQLException SQLE){
+            SQLE.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public List<QuotaEnseignant> getAll() {
+        try{
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
+            PreparedStatement statement = cnx.prepareStatement
+                    ("select *" +
+                            " from quotas");
+            ResultSet resultSetQuota = statement.executeQuery();
+            List<QuotaEnseignant> AllQuota = new ArrayList<QuotaEnseignant>();
+            if(resultSetQuota.next()){
+                do {
+                    AllQuota.add(get(resultSetQuota.getString("utilisateur_id")
+                            , resultSetQuota.getString("type_cours_id")
+                            , resultSetQuota.getInt("module_id")));
+                }while (resultSetQuota.next());
+                resultSetQuota.close();
+                return AllQuota;
+            }
+        }
+        catch (SQLException SQLE){
+            SQLE.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void save(QuotaEnseignant quotaEnseignant) {
+        try {
+            if (get(quotaEnseignant.getIdEnseignant()
+                    , quotaEnseignant.getTypeCours()
+                    , quotaEnseignant.getModuleQ().getId()) != null) {
+                update(quotaEnseignant);
+            }
+            else {
+                Connection cnx = ConnectionJDBC.getInstance().getConnection();
+                PreparedStatement statement = cnx.prepareStatement
+                        ("insert INTO quotas(" +
+                                "utilisateur_id" +
+                                ", type_cours_id" +
+                                ", module_id" +
+                                ", nombre_heures_quota" +
+                                ")" +
+                                " values(" +
+                                "?" +
+                                ",?" +
+                                ",?" +
+                                ",?" +
+                                ")");
+                statement.setString(1,quotaEnseignant.getIdEnseignant());
+                statement.setString(2,quotaEnseignant.getTypeCours());
+                statement.setInt(3,quotaEnseignant.getModuleQ().getId());
+                statement.setInt(4,quotaEnseignant.getQuantite());
+                statement.execute();
+            }
+        }
+        catch (SQLException SQLE){
+            SQLE.printStackTrace();
+        }
+    }
+
+    @Override
+    public void update(QuotaEnseignant quotaEnseignant) {
+        try {
+            if (get(quotaEnseignant.getIdEnseignant()
+                    , quotaEnseignant.getTypeCours()
+                    , quotaEnseignant.getModuleQ().getId()) != null) {
+                Connection cnx = ConnectionJDBC.getInstance().getConnection();
+                PreparedStatement statement = cnx.prepareStatement
+                        ("UPDATE quotas" +
+                                "   SET nombre_heures_quota = ?" +
+                                " where utilisateur_id = ?" +
+                                "   and module_id = ?" +
+                                "   and type_cours_id = ?");
+                statement.setInt(1,quotaEnseignant.getQuantite());
+                statement.setString(2,quotaEnseignant.getIdEnseignant());
+                statement.setInt(3,quotaEnseignant.getModuleQ().getId());
+                statement.setString(4,quotaEnseignant.getTypeCours());
+                statement.executeUpdate();
+            }
+        }
+        catch (SQLException SQLE){
+            SQLE.printStackTrace();
+        }
+    }
+
+    @Override
+    public int delete(QuotaEnseignant quotaEnseignant) {
+        try {
+            if (get(quotaEnseignant.getIdEnseignant()
+                    , quotaEnseignant.getTypeCours()
+                    , quotaEnseignant.getModuleQ().getId()) != null) {
+                Connection cnx = ConnectionJDBC.getInstance().getConnection();
+                PreparedStatement statement = cnx.prepareStatement
+                        ("delete from quotas" +
+                                " where utilisateur_id = ?" +
+                                " and type_cours_id = ?" +
+                                " and module_id = ?");
+                statement.setString(1,quotaEnseignant.getIdEnseignant());
+                statement.setString(2,quotaEnseignant.getTypeCours());
+                statement.setInt(3,quotaEnseignant.getModuleQ().getId());
+                return statement.executeUpdate();
+            }
+        }
+        catch (SQLException SQLE){
+            SQLE.printStackTrace();
+        }
+        return 0;
+    }
+
     public String toString(QuotaEnseignant Q){
         if(Q != null){
             return new UtilisateurDaoImpl().getNomUser(Q.getIdEnseignant()) + " : " + Q.getModuleQ().getNom()

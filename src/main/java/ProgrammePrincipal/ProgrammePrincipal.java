@@ -3,12 +3,14 @@ package ProgrammePrincipal;
 import dao.cours.CoursDaoImpl;
 import dao.cours.ModuleDaoImpl;
 import dao.quota.QuotaEnseignantDaoImpl;
+import dao.quota.QuotaGroupeDaoImpl;
 import dao.time.TrancheHoraireDao;
 import dao.time.TrancheHoraireDaoImpl;
 import dao.users.UtilisateurDaoImpl;
 import models.cours.Cours;
 import models.cours.Module;
 import models.quota.QuotaEnseignant;
+import models.quota.QuotaGroupe;
 import models.time.TrancheHoraire;
 import models.usersFactory.User;
 
@@ -30,6 +32,7 @@ public class ProgrammePrincipal {
 
     public static void afficheFonc(List<Fonctionnalite> Foncs){
         System.out.println("\n");
+        System.out.println("Fonctionnalités;");
         for (Fonctionnalite F:
              Foncs) {
             System.out.println(F);
@@ -69,7 +72,7 @@ public class ProgrammePrincipal {
         for(int i = 1 ; i < new TrancheHoraireDaoImpl().lastSemaine() + 1; i++){
             ListSemaine.add(Integer.toString(i));
         }
-        String EntreeSemaine = entree("L'emploi du temps de quelle semaine voulez-vous :"
+        String EntreeSemaine = entree("De quelle semaine voulez-vous les informations :"
                 , ListSemaine);
         return EntreeSemaine;
     }
@@ -240,7 +243,7 @@ public class ProgrammePrincipal {
                 System.out.println("Aucune indisponibilité : la semaine " + EntreeSemaine);
             }
             else {
-                System.out.println("Indisponibilités de : " + user.getId() + " pour la semaine " + EntreeSemaine + "\n"
+                System.out.println("Indisponibilités de : " + new UtilisateurDaoImpl().getNomUser(user.getId()) + " pour la semaine " + EntreeSemaine + "\n"
                         + new TrancheHoraireDaoImpl().toString(ListIndispoDeUser));
             }
         }
@@ -255,22 +258,29 @@ public class ProgrammePrincipal {
     }
 
     public static void fonctionnaliteCoursGroupeEnAdmin(User user){
-        System.out.println("Quel groupe : ");
         if(new UtilisateurDaoImpl().getAllGroupes() != null) {
             System.out.println(new UtilisateurDaoImpl().getAllGroupes());
-            String EntreeGroupe = new Scanner(System.in).next();
+            List<String> Groupes = new UtilisateurDaoImpl().getAllGroupes();
+            Groupes.add("exit");
+            String EntreeGroupe = entree("Quel groupe ? : ", Groupes);
             if (!EntreeGroupe.equals("exit")) {
                 String EntreeSemaine = entreeSemaine();
                 if (!EntreeSemaine.equals("exit")) {
                     List<Cours> ListCoursGroupe = new CoursDaoImpl()
                             .getCoursByGroup(EntreeGroupe, Integer.parseInt(EntreeSemaine));
-                    new CoursDaoImpl().toString(ListCoursGroupe);
+                    if(ListCoursGroupe != null && !ListCoursGroupe.isEmpty()) {
+                        new CoursDaoImpl().toString(ListCoursGroupe);
+                    }
+                    else {
+                        System.out.println("Aucun cours");
+                    }
                 }
             }
             redirect(user);
         }
         else {
             System.out.println("Pas de groupe enregistré");
+            redirect(user);
         }
     }
 
@@ -291,12 +301,39 @@ public class ProgrammePrincipal {
         redirect(user);
     }
 
+    public static void fonctionnaliteHeuresGroupe(User user){
+        if(new UtilisateurDaoImpl().getAllGroupes() != null) {
+            System.out.println(new UtilisateurDaoImpl().getAllGroupes());
+            List<String> Groupes = new UtilisateurDaoImpl().getAllGroupes();
+            Groupes.add("exit");
+            String EntreeGroupe = entree("Quel groupe ? : ", Groupes);
+            if (!EntreeGroupe.equals("exit")) {
+                String EntreeSemaine = entreeSemaine();
+                if (!EntreeSemaine.equals("exit")) {
+                    List<QuotaGroupe> ListQGroupe = new QuotaGroupeDaoImpl().quotasByGroupeSemaine(EntreeGroupe, Integer.parseInt(EntreeSemaine));
+                    if(ListQGroupe != null && !ListQGroupe.isEmpty()) {
+                        System.out.println(new QuotaGroupeDaoImpl().toString(ListQGroupe));
+                    }
+                    else {
+                        System.out.println("Aucunne données enregistrées :");
+                    }
+                }
+            }
+            redirect(user);
+        }
+        else {
+            System.out.println("Pas de groupe enregistré");
+            redirect(user);
+        }
+    }
+
     public static void adminMain(User user){
         List<Fonctionnalite> FoncAdmin = new ArrayList<Fonctionnalite>();
         FoncAdmin.add(new Fonctionnalite(1, "Lecture de l'emploi du temps d'un utilisateur :"));
         FoncAdmin.add(new Fonctionnalite(2, "Lecture de l'emploi du temps d'un groupe :"));
         FoncAdmin.add(new Fonctionnalite(3, "Lecture des indisponibilités d'un enseignant :"));
         FoncAdmin.add(new Fonctionnalite(4, "Lecture des quantités d'heures attribuées à un professeur pour un module :"));
+        FoncAdmin.add(new Fonctionnalite(5, "Lecture des quantités d'heures attribuées à un groupe :"));
         int Choix = choixFonctionnalite(FoncAdmin);
         switch (Choix){
             case 0 : {
@@ -313,6 +350,9 @@ public class ProgrammePrincipal {
             };break;
             case 4 : {
                 fonctionnaliteHeuresEnseignantenAdmin(user);
+            };break;
+            case 5 : {
+                fonctionnaliteHeuresGroupe(user);
             };break;
             default:;
         }

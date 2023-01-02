@@ -4,6 +4,7 @@ import ConnectionJDBC.ConnectionJDBC;
 import dao.time.TrancheHoraireDaoImpl;
 import dao.users.UtilisateurDaoImpl;
 import models.cours.Cours;
+import models.cours.Module;
 import models.time.TrancheHoraire;
 import models.usersFactory.User;
 
@@ -129,5 +130,152 @@ public class CoursDaoImpl implements CoursDao{
             return CompilationCours;
         }
         return "";
+    }
+
+    @Override
+    public List<Cours> getAll() {
+        try{
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
+            PreparedStatement statement = cnx.prepareStatement
+                    ("select cours_id" +
+                            " from cours");
+            ResultSet ResultModule = statement.executeQuery();
+            List<Cours> AllCours = new ArrayList<Cours>();
+            if(ResultModule.next()){
+                do {
+                    AllCours.add(get(ResultModule.getInt("cours_id")));
+                }while (ResultModule.next());
+                ResultModule.close();
+                return AllCours;
+            }
+        }
+        catch (SQLException SQLE){
+            SQLE.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void save(Cours cours) {
+        try{
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
+            if(get(cours.getId()) != null) {
+                update(cours);
+            }
+            else {
+                //Methode SQL permettant d'entrer un nouveau cours
+                PreparedStatement statement = cnx.prepareStatement
+                        ("CALL entrer_cours(" +
+                                "?" +
+                                ", ?" +
+                                ", ?" +
+                                ", ?" +
+                                ", ?" +
+                                ", ?" +
+                                ", ?" +
+                                ", ?" +
+                                ", ?" +
+                                ")");
+                statement.setInt(1,cours.getTemporalite().getIdJour());
+                statement.setInt(2,cours.getTemporalite().getIdSemaine());
+                statement.setTime(3,cours.getTemporalite().getDebut());
+                statement.setTime(4,cours.getTemporalite().getFin());
+                statement.setString(5,cours.getEmplacement().getId());
+                statement.setString(6,cours.getGroupeId());
+                statement.setString(7,cours.getEnseignantId());
+                statement.setString(8,cours.getTypeCours());
+                statement.setString(9,cours.getModule().getNom());
+            }
+        }
+        catch (SQLException SQLE){
+            SQLE.printStackTrace();
+        }
+    }
+
+    @Override
+    public void update(Cours cours) {
+        if(get(cours.getId()) != null){
+            try {
+                Connection cnx = ConnectionJDBC.getInstance().getConnection();
+                PreparedStatement statement = cnx.prepareStatement
+                        ("UPDATE cours" +
+                                "   SET module_id = ?" +
+                                "     , type_cours_id = ?" +
+                                "     , groupe_id = ?" +
+                                "     , lieu_id = ?" +
+                                "     , utilisateur_id = ?" +
+                                "     , tranche_horaire = ?" +
+                                " where cours_id = ?");
+                statement.setInt(1, cours.getModule().getId());
+                statement.setString(2, cours.getTypeCours());
+                statement.setString(3, cours.getGroupeId());
+                statement.setString(4, cours.getEmplacement().getId());
+                statement.setString(5, cours.getEnseignantId());
+                statement.setInt(6, cours.getTemporalite().getId());
+                statement.setInt(7, cours.getId());
+                statement.executeUpdate();
+            }
+            catch (SQLException SQLE){
+                SQLE.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public int delete(Cours cours) {
+        if(get(cours.getId()) != null){
+            try {
+                Connection cnx = ConnectionJDBC.getInstance().getConnection();
+                PreparedStatement statement = cnx.prepareStatement
+                        ("delete from cours where cours_id = ?");
+                statement.setInt(1, cours.getId());
+                return statement.executeUpdate();
+            }
+            catch (SQLException SQLE){
+                SQLE.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public Cours get(int Id) {
+        try{
+            Connection cnx = ConnectionJDBC.getInstance().getConnection();
+            PreparedStatement statement = cnx.prepareStatement
+                    (" select c.*" +
+                            "     , t_h.*" +
+                            "  from cours c" +
+                            "     , tranches_horaires t_h" +
+                            " where c.tranche_horaire = t_h.tranche_horaire" +
+                            "   and c.cours_id = ?");
+            statement.setInt(1, Id);
+            ResultSet Cours = statement.executeQuery();
+            List<Cours> ListeCours = new ArrayList<Cours>();
+            if (Cours.next()){
+                Cours CoursCherche = new Cours(Cours.getInt("cours_id")
+                        , new TrancheHoraire(Cours.getInt("tranche_horaire")                                   , Cours.getInt("semaine_id")
+                        , Cours.getInt("jour_id")
+                        , Cours.getTime("heure_debut")
+                        , Cours.getTime("heure_fin"))
+                        , new LieuDaoImpl().get(Cours.getString("lieu_id"))
+                        , Cours.getString("groupe_id")
+                        , Cours.getString("utilisateur_id")
+                        , Cours.getString("type_cours_id")
+                        , new ModuleDaoImpl().get(Cours.getInt("module_id")));
+                Cours.close();
+                return CoursCherche;
+            }
+            Cours.close();
+        }
+        catch (SQLException SQLE){
+            SQLE.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        List<Cours> Acours = new CoursDaoImpl().getAll();
+        System.out.println(Acours);
     }
 }
