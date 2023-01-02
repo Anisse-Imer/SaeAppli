@@ -8,11 +8,12 @@ import models.usersFactory.User;
 import java.util.List;
 
 public interface CoursDao extends DAO<Cours>, DAOInt<Cours> {
-    public List<Cours> getCoursByUser(User user, int IdSemaine);
+    List<Cours> getCoursByUser(User user, int IdSemaine);
 
-    public String toString(Cours cours);
+    List<Cours> getCoursByGroup(String GroupeID, int IDSemaine);
 
-    public String toString(List<Cours> ListeCours);
+    String toString(Cours cours);
 
-    public List<Cours> getCoursByGroup(String GroupeID, int IDSemaine);
+    String toString(List<Cours> ListeCours);
+
 }

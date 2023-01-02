@@ -16,6 +16,10 @@ import java.util.List;
 
 public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
 
+    //Renvoie un tableau contenant en int[0] les heures et en int[1] les minutes prévues sur l'emploi du temps.
+    //Selon l'enseignant le module et le type de cours.
+    //Calcul donc la quantité de temps déjà attribuée.
+    //Renvoie null si aucune quantité n'est trouvée.
     public int[] quantiteModuleTypeCours(String IdEnseignant, String TypeCours, int IdModule) {
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -54,6 +58,8 @@ public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
         return null;
     }
 
+    //Renvoie les QuotasEnseignant selon le module.
+    //Les quotas peuvent être multiples puisqu'il existe plusieurs types de cours, on renvoie donc une liste.
     public List<QuotaEnseignant> quotaEnseignantModule(User UserEns, int IdModule) {
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -74,22 +80,16 @@ public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
                     int[] Quantites = quantiteModuleTypeCours(UserEns.getId()
                                                             , resultSetQuota.getString("type_cours_id")
                                                             , IdModule);
-                    if(Quantites != null) {
-                        Quotas.add(new QuotaEnseignant(resultSetQuota.getString("utilisateur_id")
-                                , resultSetQuota.getString("type_cours_id")
-                                , new ModuleDaoImpl().get(IdModule)
-                                , resultSetQuota.getInt("nombre_heures_quota")
-                                , Quantites[0]
-                                , Quantites[1]));
+                    //Il peut n'y avoir aucun cours encore de prévu, on passe donc les valeurs à 0;
+                    if(Quantites == null) {
+                        Quantites = new int[2];
                     }
-                    else {
-                        Quotas.add(new QuotaEnseignant(resultSetQuota.getString("utilisateur_id")
-                                , resultSetQuota.getString("type_cours_id")
-                                , new ModuleDaoImpl().get(IdModule)
-                                , resultSetQuota.getInt("nombre_heures_quota")
-                                , 0
-                                , 0));
-                    }
+                    Quotas.add(new QuotaEnseignant(resultSetQuota.getString("utilisateur_id")
+                            , resultSetQuota.getString("type_cours_id")
+                            , new ModuleDaoImpl().get(IdModule)
+                            , resultSetQuota.getInt("nombre_heures_quota")
+                            , Quantites[0]
+                            , Quantites[1]));
                 }while (resultSetQuota.next());
                 resultSetQuota.close();
                 return Quotas;
@@ -101,6 +101,7 @@ public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
         return null;
     }
 
+    //Il s'agit ici d'une clé tertiaire lié à une quantité d'heures de cours a réalisé.
     public QuotaEnseignant get(String IdEnseignant, String TypeCours, int IdModule){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -119,22 +120,15 @@ public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
                 int[] Quantites = quantiteModuleTypeCours(IdEnseignant
                         , resultSetQuota.getString("type_cours_id")
                         , IdModule);
-                if(Quantites != null) {
-                    Quota = new QuotaEnseignant(resultSetQuota.getString("utilisateur_id")
-                            , resultSetQuota.getString("type_cours_id")
-                            , new ModuleDaoImpl().get(IdModule)
-                            , resultSetQuota.getInt("nombre_heures_quota")
-                            , Quantites[0]
-                            , Quantites[1]);
+                if(Quantites == null) {
+                    Quantites = new int[2];
                 }
-                else {
-                    Quota = new QuotaEnseignant(resultSetQuota.getString("utilisateur_id")
-                            , resultSetQuota.getString("type_cours_id")
-                            , new ModuleDaoImpl().get(IdModule)
-                            , resultSetQuota.getInt("nombre_heures_quota")
-                            , 0
-                            , 0);
-                }
+                Quota = new QuotaEnseignant(resultSetQuota.getString("utilisateur_id")
+                        , resultSetQuota.getString("type_cours_id")
+                        , new ModuleDaoImpl().get(IdModule)
+                        , resultSetQuota.getInt("nombre_heures_quota")
+                        , Quantites[0]
+                        , Quantites[1]);
                 resultSetQuota.close();
                 return Quota;
             }
@@ -145,6 +139,7 @@ public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
         return null;
     }
 
+    //Renvoie tous les Quotas enseignants de la base.
     @Override
     public List<QuotaEnseignant> getAll() {
         try{
@@ -170,6 +165,7 @@ public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
         return null;
     }
 
+    //Permet de sauvegarder ou de mettre à jour un QuotaEnseignant dans la base.
     @Override
     public void save(QuotaEnseignant quotaEnseignant) {
         try {
@@ -205,6 +201,7 @@ public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
         }
     }
 
+    //Permet de mettre à jour un QuotaEnseignant dans la base.
     @Override
     public void update(QuotaEnseignant quotaEnseignant) {
         try {
@@ -230,6 +227,7 @@ public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
         }
     }
 
+    //Permet de supprimer un QuotaEnseignant (table quotas), ces changements n'auront aucune incidence sur les cours.
     @Override
     public int delete(QuotaEnseignant quotaEnseignant) {
         try {
@@ -254,6 +252,9 @@ public class QuotaEnseignantDaoImpl implements QuotaEnseignantDao{
         return 0;
     }
 
+
+    //Ces méthodes d'affichage se servent des méthodes d'extractions de données du DAO, d'où leur présence.
+    //Elles renvoient une chaine de caractères contenant les informations des ou du QuotaEnseignant.
     public String toString(QuotaEnseignant Q){
         if(Q != null){
             return new UtilisateurDaoImpl().getNomUser(Q.getIdEnseignant()) + " : " + Q.getModuleQ().getNom()

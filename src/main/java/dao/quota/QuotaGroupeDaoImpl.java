@@ -2,8 +2,6 @@ package dao.quota;
 
 import ConnectionJDBC.ConnectionJDBC;
 import dao.cours.ModuleDaoImpl;
-import models.cours.Module;
-import models.quota.QuotaEnseignant;
 import models.quota.QuotaGroupe;
 
 import java.sql.Connection;
@@ -14,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuotaGroupeDaoImpl implements QuotaGroupeDao{
+
+    //Renvoie la liste des Quotas d'heures qu'un groupe doit réaliser selon la semaine, peu importe le cours.
     public List<QuotaGroupe> quotasByGroupeSemaine(String IdGroupe, int IdSemaine){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -25,7 +25,7 @@ public class QuotaGroupeDaoImpl implements QuotaGroupeDao{
             statement.setString(2, IdGroupe);
             statement.setInt(1, IdSemaine);
             ResultSet resultSetQuota = statement.executeQuery();
-            List<QuotaGroupe> Quotas = new ArrayList<QuotaGroupe>();
+            List<QuotaGroupe> Quotas = new ArrayList<>();
             while (resultSetQuota.next()){
                 Quotas.add(new QuotaGroupe(IdGroupe
                                             , new ModuleDaoImpl().get(resultSetQuota.getInt("module_id"))
@@ -41,6 +41,8 @@ public class QuotaGroupeDaoImpl implements QuotaGroupeDao{
         return null;
     }
 
+    //Renvoie le QuotaGroupe (table quantites_heures_modules) selon le groupe, le module, le type de cours et la semaine.
+    //La donnée extraite ici est "quantite_heure".
     public QuotaGroupe get(String IdGroupe, int IdModule, String TypeCours, int IdSemaine){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -72,6 +74,8 @@ public class QuotaGroupeDaoImpl implements QuotaGroupeDao{
         return null;
     }
 
+    //Renvoie toutes les lignes de la table quantites_heures_modules.
+    //Renvoie null si rien n'est enregistré.
     @Override
     public List<QuotaGroupe> getAll() {
         try{
@@ -81,7 +85,7 @@ public class QuotaGroupeDaoImpl implements QuotaGroupeDao{
                             "  from quantites_heures_modules");
             ResultSet ResultModule = statement.executeQuery();
             if(ResultModule.next()){
-                List<QuotaGroupe> AllQuotas = new ArrayList<QuotaGroupe>();
+                List<QuotaGroupe> AllQuotas = new ArrayList<>();
                 do{
                     AllQuotas.add(get(ResultModule.getString("groupe_id")
                             , ResultModule.getInt("module_id")
@@ -98,6 +102,7 @@ public class QuotaGroupeDaoImpl implements QuotaGroupeDao{
         return null;
     }
 
+    //Saubegarde ou met à jour un QuotaGroupe dans la base.
     @Override
     public void save(QuotaGroupe quotaGroupe) {
         try{
@@ -137,6 +142,8 @@ public class QuotaGroupeDaoImpl implements QuotaGroupeDao{
         }
     }
 
+    //Met à jour un QuotaGroupe dans la base selon la clé à 4 paramètres (String IdGroupe, int IdModule, String TypeCours, int IdSemaine).
+    //Met à jour "quantite_heures".
     @Override
     public void update(QuotaGroupe quotaGroupe) {
         try {
@@ -165,6 +172,7 @@ public class QuotaGroupeDaoImpl implements QuotaGroupeDao{
         }
     }
 
+    //Supprime un QuotaGroupe de la base selon la clé à 4 paramètres.
     @Override
     public int delete(QuotaGroupe quotaGroupe) {
         if(get(quotaGroupe.getIdGroupe()
@@ -191,6 +199,7 @@ public class QuotaGroupeDaoImpl implements QuotaGroupeDao{
         return 0;
     }
 
+    //Méthodes renvoyant une chaîne contenant les informations des Quotas.
     public String toString(QuotaGroupe Q){
         if(Q != null) {
             return "Semaine " + Q.getIdSemaine() + " : Groupe " + Q.getIdGroupe() + " : "

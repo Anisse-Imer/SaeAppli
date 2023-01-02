@@ -4,7 +4,6 @@ import ConnectionJDBC.ConnectionJDBC;
 import dao.time.TrancheHoraireDaoImpl;
 import dao.users.UtilisateurDaoImpl;
 import models.cours.Cours;
-import models.cours.Module;
 import models.time.TrancheHoraire;
 import models.usersFactory.User;
 
@@ -17,6 +16,8 @@ import java.util.List;
 
 public class CoursDaoImpl implements CoursDao{
 
+    //Méthode stockant deux requêtes SQL, une retournant les cours d'un professeur pour une semaine et l'autre pour
+    //n'importe quel utilisateur
     public String CoursUser(User user){
         if(user.getFonction().equals("ENS")){
             //Retourne les cours d'un enseignant sur une semaine
@@ -42,7 +43,7 @@ public class CoursDaoImpl implements CoursDao{
                 " ORDER BY semaine_id, jour_id, heure_debut";
     }
 
-    //Retourne l'emploi du temps d'un utilisateur selon la semaine.
+    //Retourne l'emploi du temps d'un utilisateur selon la semaine et selon sa fonction.
     public List<Cours> getCoursByUser(User user, int IdSemaine){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -50,7 +51,7 @@ public class CoursDaoImpl implements CoursDao{
             statement.setInt(1, IdSemaine);
             statement.setString(2, user.getId());
             ResultSet Cours = statement.executeQuery();
-            List<Cours> ListeCours = new ArrayList<Cours>();
+            List<Cours> ListeCours = new ArrayList<>();
             while (Cours.next()){
                 ListeCours.add(new Cours(Cours.getInt("cours_id")
                                         , new TrancheHoraire(Cours.getInt("tranche_horaire")                                   , Cours.getInt("semaine_id")
@@ -72,6 +73,7 @@ public class CoursDaoImpl implements CoursDao{
         return null;
     }
 
+    //Retourne l'emploi du temps d'un groupe sur une semaine. (List<Cours> est triée selon les coordonnées temporelles).
     public List<Cours> getCoursByGroup(String GroupeID, int SemaineID){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -87,7 +89,7 @@ public class CoursDaoImpl implements CoursDao{
             statement.setString(1, GroupeID);
             statement.setInt(2, SemaineID);
             ResultSet Cours = statement.executeQuery();
-            List<Cours> ListeCours = new ArrayList<Cours>();
+            List<Cours> ListeCours = new ArrayList<>();
             while (Cours.next()){
                 ListeCours.add(new Cours(Cours.getInt("cours_id")
                         , new TrancheHoraire(Cours.getInt("tranche_horaire")                                   , Cours.getInt("semaine_id")
@@ -110,6 +112,9 @@ public class CoursDaoImpl implements CoursDao{
         return null;
     }
 
+    //Permet de retourner une chaîne avec les informations d'un cours.
+    //On incorpore cette méthode dans le DAO car elle va chercher de nouvelles informations dans la base
+    // (connectée avec d'autres DAO).
     public String toString(Cours cours){
         if(cours != null) {
             UtilisateurDaoImpl UDAO = new UtilisateurDaoImpl();
@@ -120,6 +125,7 @@ public class CoursDaoImpl implements CoursDao{
         return "";
     }
 
+    //Compile et renvoie plusieurs cours en chaîne de caractères.
     public String toString(List<Cours> ListeCours){
         if (ListeCours != null){
             String CompilationCours = "";
@@ -132,6 +138,7 @@ public class CoursDaoImpl implements CoursDao{
         return "";
     }
 
+    //Renvoie dans une List tous les cours de la base de données.
     @Override
     public List<Cours> getAll() {
         try{
@@ -140,7 +147,7 @@ public class CoursDaoImpl implements CoursDao{
                     ("select cours_id" +
                             " from cours");
             ResultSet ResultModule = statement.executeQuery();
-            List<Cours> AllCours = new ArrayList<Cours>();
+            List<Cours> AllCours = new ArrayList<>();
             if(ResultModule.next()){
                 do {
                     AllCours.add(get(ResultModule.getInt("cours_id")));
@@ -155,6 +162,7 @@ public class CoursDaoImpl implements CoursDao{
         return null;
     }
 
+    //Méthode permettant de sauvegarder un nouveau cours dans la base en se servant d'une méthode SQL.
     @Override
     public void save(Cours cours) {
         try{
@@ -192,6 +200,7 @@ public class CoursDaoImpl implements CoursDao{
         }
     }
 
+    //Permet de modifier les paramètres d'un cours.
     @Override
     public void update(Cours cours) {
         if(get(cours.getId()) != null){
@@ -221,6 +230,7 @@ public class CoursDaoImpl implements CoursDao{
         }
     }
 
+    //Permet de supprimer un cours.
     @Override
     public int delete(Cours cours) {
         if(get(cours.getId()) != null){
@@ -238,6 +248,7 @@ public class CoursDaoImpl implements CoursDao{
         return 0;
     }
 
+    //Permet de récupérer un objet cours de la base à partir de son id.
     @Override
     public Cours get(int Id) {
         try{
@@ -251,7 +262,6 @@ public class CoursDaoImpl implements CoursDao{
                             "   and c.cours_id = ?");
             statement.setInt(1, Id);
             ResultSet Cours = statement.executeQuery();
-            List<Cours> ListeCours = new ArrayList<Cours>();
             if (Cours.next()){
                 Cours CoursCherche = new Cours(Cours.getInt("cours_id")
                         , new TrancheHoraire(Cours.getInt("tranche_horaire")                                   , Cours.getInt("semaine_id")

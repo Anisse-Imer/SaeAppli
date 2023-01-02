@@ -9,8 +9,11 @@ import java.util.List;
 
 public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
 
+    //Cette méthode nous permet, de nous servir de ces méthodes dans un contexte classique.
     public TrancheHoraireDaoImpl(){}
 
+    //Renvoie la tranche_horaire dont l'Id est passé en paramètre.
+    //Renvoie null si n'existe pas.
     @Override
     public TrancheHoraire get(int id) {
         try{
@@ -27,6 +30,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
                         Tranche.getInt("jour_id"),
                         Tranche.getTime("heure_debut"),
                         Tranche.getTime("heure_fin"));
+                Tranche.close();
                 return TID;
             }
             Tranche.close();
@@ -37,6 +41,8 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         return null;
     }
 
+    // Récupère et renvoie toutes les tranches horaires.
+    // Cette méthode renvoie null si aucune tranche_horaire n'est enregistrée.
     @Override
     public List<TrancheHoraire> getAll() {
         try{
@@ -46,7 +52,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
                             " from tranches_horaires");
             ResultSet IdTranches = statement.executeQuery();
             if(IdTranches.next()){
-                List<TrancheHoraire> Tranches = new ArrayList<TrancheHoraire>();
+                List<TrancheHoraire> Tranches = new ArrayList<>();
                 do {
                     Tranches.add(get(IdTranches.getInt("tranche_horaire")));
                 }while (IdTranches.next());
@@ -60,6 +66,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         return null;
     }
 
+    //Sauvegarde
     public void save(TrancheHoraire T1) {
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -87,10 +94,11 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         }
     }
 
+    //Méthode n'ayant pas de
     @Override
     public void update(TrancheHoraire trancheHoraire) {
-        //Cette méthode ne fait rien car mettre à jour une tranche horaire met en danger l'intégrité de la base
-        //dans sa logique de gestion du temps. On attribue ou on crée une tranche horaire, on ne la modifie pas.
+        //Cette méthode ne fait rien, car mettre à jour une tranche horaire met en danger l'intégrité de la base
+        //dans sa logique de gestion du temps. On attribue ou crée une tranche horaire, on ne la modifie pas.
     }
 
     //Cette méthode est à utiliser avec grande précaution puisque supprimer des données qui sont pour la plupart,
@@ -113,7 +121,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         return 0;
     }
 
-    //Version améliorée du save permettant
+    //Version améliorée du save permettant de vérifier si la tranche_horaire existe, la créer sinon et renvoyer la tranche_horaire modifiée.
     public TrancheHoraire getTrancheHoraireExist(TrancheHoraire T1){
         if(getIdTrancheHoraire(T1) == 0){
             addSemaine(T1.getIdSemaine());
@@ -125,7 +133,8 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         return T1;
     }
 
-
+    //Méthode renvoyant le numéro de la dernière semaine stockée dans la base.
+    //Renvoie -1 si aucune semaine n'est enregistrée dans la base.
     public int lastSemaine(){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -146,6 +155,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         return -1;
     }
 
+    //Renvoie la dernière des dates enregistrées dans la base semaines.
     public Date lastDateSemaines(){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -166,6 +176,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         return null;
     }
 
+    //Renvoie une date additionnée à un interval de jours. Permet le recalcul de dates(jour et semaine).
     public Date dateInterval(Date D1, int interval){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -187,6 +198,8 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         }
         return null;
     }
+
+    //Permet d'ajouter les semaines qui séparent la dernière semaine de la SemaineId.
     public void addSemaine(int SemaineId){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -203,6 +216,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
                     statement.setString(2,
                             dateInterval(LastDate, 7 + (i - LastSemaine) * 7 ).toString());
                     statement.execute();
+                    //Méthode SQL remplissant les jours de la semaine dans la table "jours".
                     PreparedStatement StatementJour = cnx.prepareStatement
                             ("CALL creer_jours_semaine(?)");
                     StatementJour.setInt(1, i + 1);
@@ -214,6 +228,9 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
             SQLE.printStackTrace();
         }
     }
+
+    //Méthode utile à l'affichage, renvoie une chaine de caractères contenant la date qui correspond au jour et
+    //à la semaine de T1 dans le contexte de la base(semaine 1 référence).
     public String getDateByTrancheHoraire(TrancheHoraire T1){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -238,6 +255,8 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         return null;
     }
 
+    //Renvoie l'id de la tranche horaire dont les données de T1 correspondent.
+    //Renvoie 0 si la tranche horaire n'existe pas déjà.
     public int getIdTrancheHoraire(TrancheHoraire T1){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -265,6 +284,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         return 0;
     }
 
+    //Renvoie toutes les indisponibilités d'un enseignant.
     public List<TrancheHoraire> getIndisponibiliteEnseignant(String IdEnseignant){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -274,7 +294,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
                             " where utilisateur_id = ?");
             statement.setString(1, IdEnseignant);
             ResultSet IdTranchesHoraires = statement.executeQuery();
-            List<TrancheHoraire> Tranches = new ArrayList<TrancheHoraire>();
+            List<TrancheHoraire> Tranches = new ArrayList<>();
             while (IdTranchesHoraires.next()){
                 TrancheHoraire TrancheSelonId = get(
                                                 IdTranchesHoraires.getInt("tranche_horaire"));
@@ -291,6 +311,8 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         return null;
     }
 
+    //Renvoie les tranches horaires d'indisponibilité de la table indisponibilités_tuteurs selon l'enseignant
+    //et le module.
     public List<TrancheHoraire> getIndisponibiliteEnseignantSemaine(String IdEnseignant, int IdSemaine){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -304,7 +326,7 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
             statement.setString(1, IdEnseignant);
             statement.setInt(2, IdSemaine);
             ResultSet IdTranchesHoraires = statement.executeQuery();
-            List<TrancheHoraire> Tranches = new ArrayList<TrancheHoraire>();
+            List<TrancheHoraire> Tranches = new ArrayList<>();
             while (IdTranchesHoraires.next()){
                 TrancheHoraire TrancheSelonId = get(
                         IdTranchesHoraires.getInt("tranche_horaire"));
@@ -321,6 +343,10 @@ public class TrancheHoraireDaoImpl implements TrancheHoraireDao {
         return null;
     }
 
+
+    //Méthode renvoyant une chaine de caractères contenant les informations d'une tranche horaire.
+    //La date ainsi que l'heure de début et de fin.
+    //Ne renvoie si T1 ou LT1 null.
     public String toString(TrancheHoraire T1){
         if(T1 != null) {
             String Date = getDateByTrancheHoraire(T1);

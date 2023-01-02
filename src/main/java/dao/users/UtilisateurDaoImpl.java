@@ -1,10 +1,7 @@
 package dao.users;
-
 import dao.time.TrancheHoraireDaoImpl;
-import dao.users.UtilisateurDao;
 import models.usersFactory.*;
 import ConnectionJDBC.ConnectionJDBC;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class UtilisateurDaoImpl implements UtilisateurDao {
+
+    //Méthode nous permettant de nous servir du DAO dans un contexte static.
     public UtilisateurDaoImpl(){}
 
     //Fonction renvoyant un User (Elève, enseignant, admin) selon les logins.
@@ -91,6 +90,8 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         return null;
     }
 
+    //Méthode renvoyant un User(Elève, enseignant ou admin) selon son id.
+    //Renvoie null si aucun User ne correspond.
     public User get(String Id){
         try {
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -123,6 +124,8 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         return null;
     }
 
+    //Renvoie tous les utilisateurs (Elève, enseignant ou admin) de la base.
+    //Renvoie null si aucun utilisateur n'est enregistré.
     public List<User> getAll() {
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -130,7 +133,7 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
                     ("select u.utilisateur_id, u.fonction_id"
                             + " from utilisateurs u");
             ResultSet DonneesEleves = statement.executeQuery();
-            List<User> AllUser = new ArrayList<User>();
+            List<User> AllUser = new ArrayList<>();
             while (DonneesEleves.next()){
                 AllUser.add(get(DonneesEleves.getString("utilisateur_id")));
             }
@@ -143,6 +146,7 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         return null;
     }
 
+    //Méthode permettant de sauvegarder les informations non essentielles à l'application dans la base.
     @Override
     public void saveInfo(User user, String MotDePasse, String Nom, String Prenom, String Telephone, String Mail) {
         save(user);
@@ -168,6 +172,7 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         }
     }
 
+    //Méthode permettant de créer ou de mettre à jour un User.
     @Override
     public void save(User user) {
         try{
@@ -210,13 +215,16 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         }
     }
 
+    //Méthode permattant de modifier la fonction d'un User dans la base.
+    //Attention on ne retransforme pas user dans la méthode.
+    //Il faut extraire à nouveau le User avec un get.
     @Override
     public void update(User user) {
         try {
             if (get(user.getId()) != null) {
                 Connection cnx = ConnectionJDBC.getInstance().getConnection();
                 PreparedStatement statement = cnx.prepareStatement
-                        ("update utilisateurs set fonction_id = where utilisateur_id = ?");
+                        ("update utilisateurs set fonction_id = ? where utilisateur_id = ?");
                 statement.setString(1,user.getFonction());
                 statement.setString(2,user.getId());
                 statement.execute();
@@ -227,6 +235,7 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         }
     }
 
+    //Supprime un User si il existe, renvoie 0 si echec et 1 si réussite.
     @Override
     public int delete(User user) {
         try {
@@ -242,13 +251,14 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         return 0;
     }
 
+    //Méthode relative à la table groupes, permettant de récupérer tous les groupes.
     public List<String> getAllGroupes(){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
             PreparedStatement StatementGroupes = cnx.prepareStatement
                     ("select groupe_id from groupes");
             ResultSet DonneesGroupes = StatementGroupes.executeQuery();
-            List<String> Groupes = new LinkedList<String>();
+            List<String> Groupes = new LinkedList<>();
             while (DonneesGroupes.next()){
                 Groupes.add(DonneesGroupes.getString("groupe_id"));
             }
@@ -261,6 +271,8 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         return null;
     }
 
+    //Méthode renvoyant les groupes auxquels appartient un élève.
+    //Null si l'élève n'existe pas ou s'il n'appartient à aucun groupe.
     public List<String> getGroupesbyEleve(String idEleve){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -268,7 +280,7 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
                     ("select groupe_id from eleves where utilisateur_id like ?");
             StatementGroupes.setString(1, "%" + idEleve + "%");
             ResultSet DonneesGroupes = StatementGroupes.executeQuery();
-            List<String> Groupes = new LinkedList<String>();
+            List<String> Groupes = new LinkedList<>();
             while (DonneesGroupes.next()){
                 Groupes.add(DonneesGroupes.getString("groupe_id"));
             }
@@ -293,7 +305,7 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
                                 + " and e.utilisateur_id = u.utilisateur_id");
             statement.setString(1,groupe);
             ResultSet DonneesEleves = statement.executeQuery();
-            List<UtilisateurEleve> ListeElevesGroupe = new LinkedList<UtilisateurEleve>();
+            List<UtilisateurEleve> ListeElevesGroupe = new LinkedList<>();
             while(DonneesEleves.next()){
                 List<String> Groupes = getGroupesbyEleve(DonneesEleves.getString("utilisateur_id"));
                 ListeElevesGroupe.add(new UtilisateurEleve(DonneesEleves.getString("utilisateur_id")
@@ -309,6 +321,8 @@ public class UtilisateurDaoImpl implements UtilisateurDao {
         return null;
     }
 
+    //Méthode renvoyant le nom et le prénom d'un utilisateur selon son Id.
+    //On ne l'utilise que dans le contexte où l'utilisateur existe dans la base.
     public String getNomUser(String IdUser) {
         try {
             Connection cnx = ConnectionJDBC.getInstance().getConnection();

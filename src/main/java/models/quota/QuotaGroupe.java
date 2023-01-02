@@ -2,12 +2,13 @@ package models.quota;
 
 import models.cours.Module;
 
+//Class représentant les heures de cours à attribuer à un groupe.
 public class QuotaGroupe {
-    String IdGroupe;
-    Module ModuleQ;
-    String TypeCours;
-    int IdSemaine;
-    int Quantite;
+    String IdGroupe;        //Groupe à qui on doit enseigner.
+    Module ModuleQ;         //Le module que l'on doit enseigner.
+    String TypeCours;       //Type de cours à enseigner.
+    int IdSemaine;          //La semaine où cette quantité d'heures devra être réalisée.
+    int Quantite;           //La quantité d'heures de cours à réaliser.
 
 
     public QuotaGroupe(String idGroupe, Module moduleQ, String typeCours, int idSemaine, int quantite) {

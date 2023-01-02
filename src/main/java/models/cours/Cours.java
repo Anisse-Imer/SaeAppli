@@ -1,17 +1,16 @@
 package models.cours;
-
 import models.time.TrancheHoraire;
-
 import java.util.List;
 
+//Class représentant un cours dans la base.
 public class Cours {
     public int Id;
-    public TrancheHoraire Temporalite;
-    public Lieu Emplacement;
-    public String GroupeId;
-    public String EnseignantId;
-    public String TypeCours;
-    public Module Module;
+    public TrancheHoraire Temporalite;  //Quand se passe le cours.
+    public Lieu Emplacement;            //Où se passe le cours.
+    public String GroupeId;             //Quel groupe d'élèves est concerné.
+    public String EnseignantId;         //Avec quel enseignant.
+    public String TypeCours;            //Le type de cours (td,tp,cm).
+    public Module Module;               //Le module enseigné pendant ce cours.
 
     public Cours(int id, TrancheHoraire temporalite, Lieu emplacement, String groupeId, String enseignantId, String typeCours, Module module) {
         Id = id;

@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModuleDaoImpl implements ModuleDao{
+
+    //Permet de récupérer un Module selon son Id s'il existe.
+    //Sinon renvoie null.
     public Module get(int IdModule){
         try{
             Connection cnx = ConnectionJDBC.getInstance().getConnection();
@@ -33,6 +36,8 @@ public class ModuleDaoImpl implements ModuleDao{
         return null;
     }
 
+    //Renvoie tous les modules de la base.
+    //Null si aucun module n'est enregistré.
     @Override
     public List<Module> getAll() {
         try{
@@ -41,7 +46,7 @@ public class ModuleDaoImpl implements ModuleDao{
                     ("select module_id" +
                             " from modules");
             ResultSet ResultModule = statement.executeQuery();
-            List<Module> Modules = new ArrayList<Module>();
+            List<Module> Modules = new ArrayList<>();
             if(ResultModule.next()){
                 do {
                     Modules.add(get(ResultModule.getInt("module_id")));
@@ -56,6 +61,7 @@ public class ModuleDaoImpl implements ModuleDao{
         return null;
     }
 
+    //Permet d'enregistrer un nouveau module dans la base ou le mettre à jour s'il existe déjà.
     @Override
     public void save(Module module) {
         try{
@@ -79,6 +85,7 @@ public class ModuleDaoImpl implements ModuleDao{
         }
     }
 
+    //Permet de mettre à jour un module dans la base selon son id (met à jour le nom).
     @Override
     public void update(Module module) {
         try {
@@ -96,6 +103,7 @@ public class ModuleDaoImpl implements ModuleDao{
         }
     }
 
+    //Supprime un module de la base selon son id.
     @Override
     public int delete(Module module) {
         try {
